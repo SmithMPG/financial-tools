@@ -1082,7 +1082,7 @@
     <!-- Main -->
     <div class="outer">
       <div class="client-list" id="client-list">
-        <!-- populated by JS -->
+        <div class="empty" id="client-list-loading"><strong style="color:var(--muted)">Loading clients…</strong></div>
       </div>
     </div>
 
@@ -1250,14 +1250,18 @@
       } = await supabase.auth.getSession();
       if (!session) {
         location.href = "./login.html";
+        return;
       }
 
       const advisorId = session.user.id;
 
+      // ── Load advisor profile + client list concurrently ────────────────────────
+      // Neither depends on the other — only both depend on the session above — so
+      // fetch them in parallel instead of one after another before anything renders.
+      const advisorProfileReady = supabase.from("advisors").select("name, company_name, logo_url, phone, linkedin_url").eq("id", advisorId).single();
+      loadClients();
 
-      // ── Load advisor profile ──────────────────────────────────────────────────
-      const { data: advisor } = await supabase.from("advisors").select("name, company_name, logo_url, phone, linkedin_url").eq("id", advisorId).single();
-
+      const { data: advisor } = await advisorProfileReady;
       let advisorProfile = advisor || {};
 
       function getInitials(str) {
@@ -2104,8 +2108,9 @@
         if (e.target === this) closeModal();
       });
 
-      // ── Init ──────────────────────────────────────────────────────────────────
-      loadClients();
+      // (loadClients() is already kicked off above, right after auth, in parallel
+      // with the advisor profile fetch — see "Load advisor profile + client list
+      // concurrently".)
     </script>
   </body>
 </html>

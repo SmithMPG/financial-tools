@@ -140,6 +140,17 @@
       .drawer-ul-btn:hover { color: rgba(255, 255, 255, 0.75); }
       .drawer-ul-btn svg { color: rgba(255, 255, 255, 0.35); flex-shrink: 0; transition: color 0.2s; }
       .drawer-ul-btn:hover svg { color: rgba(255, 255, 255, 0.65); }
+      /* ── Initial load state (shown until the Supabase auth/client fetch resolves) ── */
+      .dashboard-loading {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 60vh;
+        color: rgba(255, 255, 255, 0.35);
+        font-family: var(--fb, sans-serif);
+        font-size: 0.9375rem;
+        letter-spacing: 0.01em;
+      }
     </style>
   </head>
 
@@ -282,7 +293,9 @@
 
     <!-- ─── WORKSPACE (CENTER) ──────────────────────────────────────── -->
     <main class="workspace" id="workspace">
-      <div id="home-view"></div>
+      <div id="home-view">
+        <div id="dashboard-loading" class="dashboard-loading">Loading meeting…</div>
+      </div>
     </main>
 
     <!-- ─── GUIDE PANEL (RIGHT) ─────────────────────────────────────── -->
@@ -943,12 +956,19 @@
 
       window._advisorSession = session;
 
+      const clientId = new URLSearchParams(location.search).get("client");
+      if (!clientId) { location.href = "./financial-tools.html"; return; }
+      window._activeClientId = clientId;
+
+      // Advisor profile and client record don't depend on each other — only both
+      // depend on the session above — so fetch them concurrently instead of one
+      // after another. This is the difference between one round trip and two.
+      const [{ data: advisorProfile }, { data: client }] = await Promise.all([
+        supabase.from("advisors").select("name, logo_url, email").eq("id", session.user.id).maybeSingle(),
+        supabase.from("clients").select("session_json, first_name, last_name, email, phone").eq("id", clientId).single(),
+      ]);
+
       // Load logged-in advisor's profile and override the slug-based ACTIVE_ADVISER
-      const { data: advisorProfile } = await supabase
-        .from("advisors")
-        .select("name, logo_url, email")
-        .eq("id", session.user.id)
-        .maybeSingle();
       if (advisorProfile) {
         window.ACTIVE_ADVISER = {
           name:  advisorProfile.name  || window.ACTIVE_ADVISER?.name  || "",
@@ -957,17 +977,7 @@
         };
       }
 
-      const clientId = new URLSearchParams(location.search).get("client");
-      if (!clientId) { location.href = "./financial-tools.html"; return; }
-      window._activeClientId = clientId;
-
-      if (clientId) {
-        const { data: client } = await supabase
-          .from("clients")
-          .select("session_json, first_name, last_name, email, phone")
-          .eq("id", clientId)
-          .single();
-
+      {
         // Store client name for tools to use before client-details is filled in
         window._activeClientFirstName = client?.first_name || null;
 
