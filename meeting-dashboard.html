@@ -1,0 +1,1058 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Financial Tools</title>
+    <meta name="description" content="Financial planning tools for client meetings." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap"
+      rel="stylesheet"
+      media="print"
+      onload="this.media = 'all'" />
+    <noscript>
+      <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet" />
+    </noscript>
+
+    <link rel="icon" type="image/svg+xml" href="resources/favicon.svg" />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="tools/meeting-tools/meeting-shared.css" />
+
+    <style>
+      .nav-tabs {
+        display: flex;
+        gap: 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        margin: 0.5rem 0 0;
+        flex-shrink: 0;
+      }
+      .nav-tab {
+        flex: 1;
+        background: none;
+        border: none;
+        border-bottom: 2px solid transparent;
+        color: var(--dim, #64748b);
+        font-family: var(--fb, sans-serif);
+        font-size: 0.72rem;
+        font-weight: 600;
+        padding: 0.5rem 0.25rem 0.45rem;
+        cursor: pointer;
+        transition: color 0.15s, border-color 0.15s;
+        letter-spacing: 0.02em;
+        margin-bottom: -1px;
+      }
+      .nav-tab:hover { color: rgba(212, 168, 67, 0.75); }
+      .nav-tab.active {
+        color: var(--gold, #d4a843);
+        border-bottom-color: var(--gold, #d4a843);
+      }
+      .nav-page { display: none; }
+      .nav-page.active { display: flex; flex-direction: column; }
+      .badge-beta, .badge-soon {
+        margin-left: auto;
+        font-size: 0.65rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        background: rgba(212, 168, 67, 0.1);
+        color: #d4a843;
+        padding: 2px 6px;
+        border-radius: 4px;
+        border: 1px solid rgba(212, 168, 67, 0.3);
+      }
+      .tool-lnk:has(.badge-soon) {
+        pointer-events: none;
+        opacity: 0.45;
+      }
+      /* ── Clip translateX hover bleed in panels ── */
+      .lf-scroll, .app-drawer, .guide-body { overflow-x: hidden; }
+      /* ── App Drawers ── */
+      .app-drawer-trigger {
+        flex-shrink: 0;
+        position: relative;
+        z-index: 20;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        padding: 0.45rem 1rem;
+        background: none;
+        border: none;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        color: rgba(255, 255, 255, 0.18);
+        cursor: pointer;
+        transition: color 0.2s, border-color 0.2s;
+      }
+      .app-drawer-trigger:hover,
+      .app-drawer-trigger.open {
+        color: rgba(255, 255, 255, 0.45);
+        border-top-color: rgba(255, 255, 255, 0.1);
+      }
+      .app-drawer-trigger svg { transition: transform 0.28s ease; flex-shrink: 0; }
+      .app-drawer-trigger.open svg { transform: rotate(180deg); }
+      .app-drawer {
+        position: absolute;
+        left: 0; right: 0; bottom: 0;
+        max-height: 72%;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+        background: #0b1221;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        z-index: 15;
+        transform: translateY(100%);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        padding-bottom: 1.5rem;
+      }
+      .app-drawer.open { transform: translateY(0); }
+      /* ── Drawer dim overlay ── */
+      .lf-panel .logo, .lf-panel .lf-scroll, .lf-panel .lf-footer,
+      .guide-panel .guide-profile, .guide-panel .guide-shimmer,
+      .guide-panel .guide-body, .guide-panel .guide-footer {
+        transition: opacity 0.25s;
+      }
+      .lf-panel.drawer-open .logo,
+      .lf-panel.drawer-open .lf-scroll,
+      .lf-panel.drawer-open .lf-footer { opacity: 0.18; pointer-events: none; }
+      .guide-panel.drawer-open .guide-profile,
+      .guide-panel.drawer-open .guide-shimmer,
+      .guide-panel.drawer-open .guide-body,
+      .guide-panel.drawer-open .guide-footer { opacity: 0.18; pointer-events: none; }
+      /* ── Drawer client actions ── */
+      .drawer-ul-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0.65rem 1rem;
+        background: none;
+        border: none;
+        color: rgba(255, 255, 255, 0.45);
+        font-family: var(--fb, sans-serif);
+        font-size: 0.8125rem;
+        font-weight: 500;
+        cursor: pointer;
+        text-align: left;
+        width: 100%;
+        transition: color 0.2s;
+      }
+      .drawer-ul-btn:hover { color: rgba(255, 255, 255, 0.75); }
+      .drawer-ul-btn svg { color: rgba(255, 255, 255, 0.35); flex-shrink: 0; transition: color 0.2s; }
+      .drawer-ul-btn:hover svg { color: rgba(255, 255, 255, 0.65); }
+    </style>
+  </head>
+
+  <body>
+    <!-- ─── DRAWER BACKDROP ───────────────────────────────────────────── -->
+    <div class="drawer-backdrop" id="drawer-backdrop"></div>
+
+    <!-- ─── LEFT PANEL: NAVIGATION ──────────────────────────────────── -->
+    <nav class="glass-panel lf-panel" id="lf-panel">
+      <div class="glass-content">
+        <a class="logo" id="home-link" href="/" aria-label="Go to home">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <path d="M12 22C12 22 20 18 20 12V5L12 2L4 5V12C4 18 12 22 12 22Z" stroke="#d4a843" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          <span class="logo-txt">The <span>Steward</span></span>
+        </a>
+
+        <!-- ── Meeting flow ── -->
+        <div class="lf-scroll">
+
+          <div class="grp-label">Getting Started</div>
+
+          <a
+            class="tool-lnk"
+            data-calc="meeting-intro"
+            data-href="tools/meeting-tools/meeting-intro.js"
+            data-title="Meeting Intro"
+            data-desc="A 7-slide presentation to open a client meeting - welcome, agenda, advisor intro, life considerations, goals, building blocks, and FAIS handoff.">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="3" width="20" height="13" rx="2"/>
+              <line x1="8" y1="21" x2="16" y2="21"/>
+              <line x1="12" y1="16" x2="12" y2="21"/>
+            </svg>
+            Meeting Intro
+          </a>
+
+          <a
+            class="tool-lnk"
+            data-calc="timeline"
+            data-href="tools/meeting-tools/timeline.js"
+            data-title="Timeline"
+            data-desc="A chronological feed of the client's life — personal milestones on one side, financial planning items on the other.">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="3" y1="12" x2="21" y2="12"/>
+              <circle cx="7" cy="12" r="2"/>
+              <circle cx="17" cy="12" r="2"/>
+            </svg>
+            Timeline
+          </a>
+
+          <div class="grp-label">Your Current Position</div>
+
+          <a
+            class="tool-lnk"
+            data-calc="existing-portfolio"
+            data-href="tools/meeting-tools/existing-portfolio.js"
+            data-title="Existing Portfolio"
+            data-desc="Capture the client's investments, assets, and liabilities to understand their current financial position.">
+            <span class="tool-step">1</span>
+            Existing Portfolio
+          </a>
+
+          <a
+            class="tool-lnk"
+            data-calc="existing-policies"
+            data-href="tools/meeting-tools/existing-policies.js"
+            data-title="Existing Policies"
+            data-desc="Capture the client's current risk cover — life, disability, income protection, dread disease, funeral, and other policies.">
+            <span class="tool-step">2</span>
+            Existing Policies
+          </a>
+
+          <a
+            class="tool-lnk"
+            data-calc="budget"
+            data-href="tools/meeting-tools/cashflow.js"
+            data-title="Cashflow"
+            data-desc="Map every rand to a purpose. Enter your income, work through ten spending categories, and see your surplus - or deficit - in real time.">
+            <span class="tool-step">3</span>
+            Cashflow
+          </a>
+
+          <div class="grp-label">Your Goals &amp; Needs</div>
+
+          <a
+            class="tool-lnk"
+            data-calc="estate-planner"
+            data-href="tools/meeting-tools/estate-planning.js"
+            data-title="Estate Planning"
+            data-desc="Map your estate, calculate executor fees, estate duty, and CGT on death — the liquidity gap feeds directly into life cover needs.">
+            <span class="tool-step">1</span>
+            Estate Planning
+          </a>
+
+          <a
+            class="tool-lnk"
+            data-calc="financial-planning"
+            data-href="tools/meeting-tools/financial-planning.js"
+            data-title="Financial Planning"
+            data-desc="Select what each cover pillar protects — estate gap, income replacement, education, and liabilities all pull through from the steps above.">
+            <span class="tool-step">2</span>
+            Financial Planning
+          </a>
+
+          <div class="grp-label">Your Plan</div>
+
+          <a
+            class="tool-lnk"
+            data-calc="wrap-up"
+            data-href="tools/meeting-tools/wrapping-up.js"
+            data-title="Wrap Up"
+            data-desc="Capture will status, service rating, and referrals to close the meeting.">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            Wrap Up
+          </a>
+
+        </div>
+
+        <div class="lf-footer">
+          <p class="lf-copy">
+            &copy; 2026 Matthew PG Smith<br />
+            <a href="mailto:matthew.smith@liblink.co.za">matthew.smith@liblink.co.za</a>
+          </p>
+        </div>
+
+        <button class="app-drawer-trigger" id="lf-drawer-trigger" aria-label="Open tools">
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="18 15 12 9 6 15" />
+          </svg>
+        </button>
+
+        <div class="app-drawer" id="lf-drawer">
+          <div id="nav-tools-mount"></div>
+
+        </div>
+      </div>
+    </nav>
+
+    <!-- ─── WORKSPACE (CENTER) ──────────────────────────────────────── -->
+    <main class="workspace" id="workspace">
+      <div id="home-view"></div>
+    </main>
+
+    <!-- ─── GUIDE PANEL (RIGHT) ─────────────────────────────────────── -->
+    <aside class="glass-panel guide-panel" id="guide-panel">
+      <div class="guide-shimmer" id="guide-shimmer" aria-hidden="true"></div>
+      <div class="glass-content">
+        <div class="guide-profile" id="guide-profile-header">
+          <img src="resources/profile_pictures/MPG_Smith.png" alt="Matthew PG Smith" class="guide-avatar" id="guide-avatar" />
+          <div>
+            <div class="guide-id-name" id="guide-id-name">Matthew PG Smith</div>
+            <div class="guide-id-role">Financial Advisor</div>
+          </div>
+        </div>
+
+        <div class="guide-body" id="guide-body">
+          <h3 class="guide-heading" id="guide-heading">Opening the meeting</h3>
+          <div class="guide-text" id="guide-text">
+          </div>
+        </div>
+
+        <div class="guide-footer">
+          <p class="guide-legal">For illustrative purposes only. Not financial advice under the FAIS Act. A Financial Needs Analysis is required before specific advice can be given.</p>
+        </div>
+
+        <!-- ── Output tools drawer ── -->
+        <button class="app-drawer-trigger" id="rt-drawer-trigger" aria-label="Open output tools">
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="18 15 12 9 6 15" />
+          </svg>
+        </button>
+
+        <div class="app-drawer" id="rt-drawer">
+          <a
+            class="tool-lnk"
+            data-calc="meeting-summary"
+            data-href="tools/fa-tools/meeting-summary.js"
+            data-title="Meeting Summary"
+            data-desc="Post-meeting notes - proposed solutions, observations, next steps, and a formatted summary email.">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            </svg>
+            Meeting Summary
+          </a>
+
+          <a
+            class="tool-lnk"
+            data-calc="roa"
+            data-href="tools/fa-tools/record-of-advice.js"
+            data-title="Record of Advice"
+            data-desc="8-section narrative RoA for your compliance file. Copy to clipboard when done.">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+              <line x1="16" y1="13" x2="8" y2="13" />
+              <line x1="16" y1="17" x2="8" y2="17" />
+              <polyline points="10 9 9 9 8 9" />
+            </svg>
+            Record of Advice
+          </a>
+
+          <a class="tool-lnk" href="./financial-tools.html">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+            Back to Client List
+          </a>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ─────────────────────────────────────────────────────────────── -->
+    <!-- ─── APP SHELL JS ─────────────────────────────────────────────── -->
+    <script>
+      // ── One-time cleanup of legacy localStorage keys ──────────────────────────
+      try {
+        Object.keys(localStorage)
+          .filter(k => k.startsWith("fa_"))
+          .forEach(k => localStorage.removeItem(k));
+      } catch (e) {}
+
+      // Gates autosave (see the sync script below) until the initial client restore has
+      // fully finished — set true once the MEETING_TOOLS preload loop completes.
+      window._restoreReady = false;
+
+      // ── MEETING STATE (in-memory only — Supabase is the persistence layer) ───
+      window.MeetingState = {
+        _data: {},
+        set(toolId, data) {
+          this._data[toolId] = Object.assign(this._data[toolId] || {}, data);
+          document.dispatchEvent(new CustomEvent("meetingstate", { detail: { toolId } }));
+        },
+        get(toolId) { return this._data[toolId] || {}; },
+        getAll() { return { ...this._data }; },
+      };
+
+      // ── Pending tool states loaded from Supabase, consumed on first mount ────
+      window._pendingToolStates = {};
+
+      // ── SESSION STORE ─────────────────────────────────────────────────────────────
+      function _serializeInputs(container) {
+        const data = {};
+        container.querySelectorAll("input[id], select[id], textarea[id]").forEach((el) => {
+          if (el.type === "checkbox" || el.type === "radio") { data[el.id] = el.checked; }
+          else { data[el.id] = el.value; }
+        });
+        container.querySelectorAll("[data-tog]").forEach((grp) => {
+          const name = grp.dataset.tog;
+          if (name) data[`__tog_${name}`] = grp.querySelector(".cm-toggle-btn.active")?.dataset.val ?? "";
+        });
+        container.querySelectorAll("[data-yn]").forEach((grp) => {
+          const name = grp.dataset.yn;
+          if (name) data[`__yn_${name}`] = grp.querySelector(".cm-yn-btn.active-yes, .cm-yn-btn.active-no")?.dataset.ans ?? "";
+        });
+        return data;
+      }
+
+      function _restoreInputs(container, data) {
+        if (!data) return;
+        Object.entries(data).forEach(([id, value]) => {
+          if (id.startsWith("__tog_")) {
+            const name = id.slice(6);
+            if (value) { const btn = container.querySelector(`[data-tog="${name}"] .cm-toggle-btn[data-val="${value}"]`); if (btn) btn.click(); }
+            return;
+          }
+          if (id.startsWith("__yn_")) {
+            const name = id.slice(5);
+            if (value) { const btn = container.querySelector(`[data-yn="${name}"] .cm-yn-btn[data-ans="${value}"]`); if (btn) btn.click(); }
+            return;
+          }
+          const el = container.querySelector(`#${id}`);
+          if (!el) return;
+          if (el.type === "checkbox" || el.type === "radio") { el.checked = value; }
+          else { el.value = value; }
+        });
+        Object.keys(data).forEach((id) => {
+          if (id.startsWith("__")) return;
+          const el = container.querySelector(`#${id}`);
+          if (!el || el.type === "range") return;
+          el.dispatchEvent(new Event("input", { bubbles: true }));
+          el.dispatchEvent(new Event("change", { bubbles: true }));
+        });
+      }
+
+      window.AppSession = {
+        // Returns a full snapshot of all mounted tools: { toolId: { inputs, extra } }
+        serializeAll() {
+          const wrappers = window.App?._wrappers ?? {};
+          const modules  = window.App?._modules  ?? {};
+          const snapshot = {};
+          Object.keys(wrappers).forEach(id => {
+            const wrapper = wrappers[id];
+            const mod     = modules[id];
+            if (!wrapper || !mod || wrapper.children.length === 0) return;
+            try {
+              const inputs = _serializeInputs(wrapper);
+              const extra  = typeof mod.getState === "function" ? mod.getState() : undefined;
+              snapshot[id] = { inputs, extra };
+            } catch (e) {}
+          });
+          return snapshot;
+        },
+        clearClientData() {
+          window._pendingToolStates = {};
+          if (window.MeetingState) window.MeetingState._data = {};
+          // Re-close the autosave gate too — whatever triggered this reset is about to
+          // start a fresh restore, and autosave must stay off until that finishes.
+          window._restoreReady = false;
+        },
+      };
+      window.FASession = window.AppSession;
+
+      // ── GUIDE CONTENT ─────────────────────────────────────────────────────────────
+      const HOME_HEADING = "Opening the meeting";
+      const HOME_TEXT = ``;
+
+      const guideBody = document.getElementById("guide-body");
+      const guideHeading = document.getElementById("guide-heading");
+      const guideText = document.getElementById("guide-text");
+      const guideShimmer = document.getElementById("guide-shimmer");
+
+      function _nudgeGuide() {
+        if (isMobile()) return;
+        guideShimmer.classList.remove("shimmer-active");
+        void guideShimmer.offsetWidth;
+        guideShimmer.classList.add("shimmer-active");
+      }
+
+      function _arriveHeading() {
+        guideHeading.classList.remove("guide-arrive");
+        void guideHeading.offsetWidth;
+        guideHeading.classList.add("guide-arrive");
+      }
+
+      function setGuide(heading, html, fade = true) {
+        if (!fade) {
+          _nudgeGuide();
+          guideBody.classList.remove("fading");
+          guideHeading.innerHTML = heading;
+          guideText.innerHTML = html;
+          guideBody.scrollTop = 0;
+          _arriveHeading();
+          return;
+        }
+        _nudgeGuide();
+        guideBody.classList.add("fading");
+        setTimeout(() => {
+          guideHeading.innerHTML = heading;
+          guideText.innerHTML = html;
+          guideBody.scrollTop = 0;
+          guideBody.classList.remove("fading");
+          _arriveHeading();
+        }, 170);
+      }
+
+      function resetGuide() { setGuide(HOME_HEADING, HOME_TEXT); }
+
+      // ── APP ───────────────────────────────────────────────────────────────────────
+      const isMobile = () => window.matchMedia("(max-width: 1000px)").matches;
+
+      window.App = {
+        _active: null,
+        _calcGuide: null,
+        _modules: {},
+        _seenCalcs: new Set(),
+        _wrappers: {},
+        _calcStates: {},
+
+        register(id, module) { this._modules[id] = module; },
+
+        load(id, fallbackHref) {
+          if (this._modules[id]) { this._mountCalc(id); closeAll(); }
+          else { window.location.href = fallbackHref; }
+        },
+
+        _mountCalc(id) {
+          const mod = this._modules[id];
+          if (!mod) return;
+
+          if (this._active) {
+            const cw = this._wrappers[this._active.id];
+            if (cw) {
+              const glass = cw.querySelector(".calc-glass");
+              if (glass) glass.style.display = "none";
+            }
+          }
+
+          const workspace = document.getElementById("workspace");
+          document.getElementById("home-view").style.display = "none";
+          workspace.classList.add("calc-active");
+
+          const link = document.querySelector(`.tool-lnk[data-calc="${id}"]`);
+          const calcTitle = link?.dataset.title || mod.title || id;
+          const tbTitle = document.getElementById("mob-tb-title");
+          if (tbTitle) tbTitle.innerHTML = `<span>${calcTitle}</span>`;
+
+          document.querySelectorAll(".tool-lnk").forEach((l) => l.classList.remove("active"));
+          link?.classList.add("active");
+
+          if (!this._wrappers[id]) {
+            const wrapper = document.createElement("div");
+            wrapper.style.display = "contents";
+            workspace.appendChild(wrapper);
+            this._wrappers[id] = wrapper;
+          }
+          const wrapper = this._wrappers[id];
+
+          if (wrapper.children.length === 0) {
+            mod.mount(wrapper);
+            this._calcStates[id] = window.CalcState;
+            const saved = window._pendingToolStates?.[id];
+            if (saved) {
+              if (saved.inputs) _restoreInputs(wrapper, saved.inputs);
+              if (saved.extra != null && typeof mod.setState === "function") mod.setState(saved.extra);
+            }
+          } else {
+            window.CalcState = this._calcStates[id];
+            const glass = wrapper.querySelector(".calc-glass");
+            if (glass) glass.style.display = "";
+            if (typeof mod.onActivate === "function") mod.onActivate(wrapper);
+          }
+
+          this._active = mod;
+
+          if (mod.guide?.intro) {
+            this._calcGuide = mod.guide.intro;
+            setGuide(mod.guide.intro.heading, mod.guide.intro.html, false);
+          }
+
+          if (isMobile() && !this._seenCalcs.has(id)) {
+            this._seenCalcs.add(id);
+            openPanel(rtPanel);
+          }
+        },
+
+        goHome() {
+          if (this._active) {
+            const cw = this._wrappers[this._active.id];
+            if (cw) {
+              const glass = cw.querySelector(".calc-glass");
+              if (glass) glass.style.display = "none";
+            }
+            this._active = null;
+          }
+          this._calcGuide = null;
+          this._mountCalc("meeting-intro");
+        },
+
+        setGuide(heading, html, openOnMobile = true) {
+          setGuide(heading, html);
+          if (openOnMobile && isMobile()) openPanel(rtPanel);
+        },
+
+        revertGuide() {
+          if (this._calcGuide) { setGuide(this._calcGuide.heading, this._calcGuide.html); }
+          else { resetGuide(); }
+        },
+
+        _preloadCalc(id) {
+          const mod = this._modules[id];
+          if (!mod) return;
+          if (this._wrappers[id]?.children.length > 0) return;
+
+          const workspace = document.getElementById("workspace");
+          if (!this._wrappers[id]) {
+            const wrapper = document.createElement("div");
+            wrapper.style.display = "contents";
+            workspace.appendChild(wrapper);
+            this._wrappers[id] = wrapper;
+          }
+          const wrapper = this._wrappers[id];
+          mod.mount(wrapper);
+          this._calcStates[id] = window.CalcState;
+
+          const saved = window._pendingToolStates?.[id];
+          if (saved) {
+            if (saved.inputs) _restoreInputs(wrapper, saved.inputs);
+            if (saved.extra != null && typeof mod.setState === "function") mod.setState(saved.extra);
+          }
+
+          wrapper.querySelectorAll(".iz-viewport.iz-snap").forEach((vp) => {
+            const firstPage = vp.querySelector(":scope > .iz-page");
+            if (!firstPage) return;
+            const h = firstPage.getBoundingClientRect().height;
+            if (h > 0) { vp.style.height = h + "px"; vp.scrollTop = 0; }
+          });
+
+          const glass = wrapper.querySelector(".calc-glass");
+          if (glass) glass.style.display = "none";
+        },
+      };
+
+      document.getElementById("home-link").addEventListener("click", (e) => {
+        e.preventDefault();
+        App.load("meeting-intro", "tools/meeting-tools/meeting-intro.js");
+        closeAll();
+      });
+
+      document.getElementById("guide-profile-header").addEventListener("click", () => App.revertGuide());
+
+      document.addEventListener("click", (e) => {
+        const link = e.target.closest(".tool-lnk[data-calc]");
+        if (!link) return;
+        e.preventDefault();
+        App.load(link.dataset.calc, link.dataset.href);
+      });
+
+      // ── MOBILE DRAWER ─────────────────────────────────────────────────────────────
+      const lfPanel = document.getElementById("lf-panel");
+      const rtPanel = document.getElementById("guide-panel");
+      const backdrop = document.getElementById("drawer-backdrop");
+      function openPanel(panel) {
+        panel.classList.add("open");
+        backdrop.style.opacity = "1";
+        backdrop.style.pointerEvents = "auto";
+        document.getElementById("hint-left").style.display = "none";
+        document.getElementById("hint-right").style.display = "none";
+      }
+
+      function closeAll() {
+        [lfPanel, rtPanel].forEach((p) => { p.style.transition = ""; p.style.transform = ""; p.classList.remove("open"); });
+        backdrop.style.opacity = "0";
+        backdrop.style.pointerEvents = "none";
+      }
+
+      backdrop.addEventListener("click", closeAll);
+
+
+
+      // ── App Drawers ───────────────────────────────────────────────────────────────
+      function _closeDrawers() {
+        document.querySelectorAll(".app-drawer").forEach((d) => d.classList.remove("open"));
+        document.querySelectorAll(".app-drawer-trigger").forEach((t) => t.classList.remove("open"));
+        document.querySelectorAll(".glass-panel").forEach((p) => p.classList.remove("drawer-open"));
+      }
+
+      [
+        ["lf-drawer-trigger", "lf-drawer", "lf-panel"],
+        ["rt-drawer-trigger", "rt-drawer", "guide-panel"],
+      ].forEach(([tid, did, pid]) => {
+        const trigger = document.getElementById(tid);
+        const drawer = document.getElementById(did);
+        const panel = document.getElementById(pid);
+        if (!trigger || !drawer) return;
+        trigger.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const isOpen = drawer.classList.contains("open");
+          _closeDrawers();
+          if (!isOpen) { drawer.classList.add("open"); trigger.classList.add("open"); panel?.classList.add("drawer-open"); }
+        });
+        drawer.addEventListener("click", (e) => { if (e.target.closest(".tool-lnk")) _closeDrawers(); });
+      });
+
+      document.addEventListener("click", (e) => {
+        if (!e.target.closest(".app-drawer") && !e.target.closest(".app-drawer-trigger")) _closeDrawers();
+      });
+
+
+      document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeAll(); });
+    </script>
+
+    <!-- ─── SHARED DEPENDENCIES ── -->
+    <!-- Chart.js CDN, components/simulation-engine.js, chart.js, donut-chart.js,
+         tool-input.js, tool-nav.js, and mobile-menu.js are NOT loaded here — audited
+         and confirmed unused by anything in tools/meeting-tools/ or tools/fa-tools/
+         (their only consumers were the standalone calculators, which no longer live
+         in this repo — see the implementation plan, "Separate Financial Tools into
+         its own repo"). Only components/input-format.js (moneyToNumber/numToRand/
+         numberToMoney — used throughout meeting-tools) and components/tool-hero.js
+         (CalcHero — used by existing-portfolio/existing-policies/cashflow/
+         estate-planning/financial-planning) are real dependencies. -->
+    <script defer src="resources/constants.js"></script>
+    <script defer src="components/tool-hero.js"></script>
+    <script defer src="components/input-format.js"></script>
+
+    <script defer src="tools/meeting-tools/meeting-shared.js"></script>
+    <script defer src="tools/meeting-tools/meeting-intro.js"></script>
+    <script defer src="tools/meeting-tools/timeline.js"></script>
+    <script defer src="tools/meeting-tools/existing-portfolio.js"></script>
+    <script defer src="tools/meeting-tools/existing-policies.js"></script>
+    <script defer src="tools/meeting-tools/cashflow.js"></script>
+    <script defer src="tools/meeting-tools/wrapping-up.js"></script>
+    <script defer src="tools/fa-tools/meeting-summary.js"></script>
+    <script defer src="tools/fa-tools/record-of-advice.js"></script>
+    <script defer src="tools/meeting-tools/financial-planning.js"></script>
+    <script defer src="tools/meeting-tools/estate-planning.js"></script>
+
+    <!-- ─── STEWARD CALCULATORS (embedded, not local modules) ──────────────────
+         The Steward remains the one canonical calculator source. Instead of loading
+         tools/standalone/*.js here, fetch the calculator list from its public API
+         and register each as a lightweight "module" whose mount() just creates an
+         iframe pointed at The Steward's own embed mode (?embed=1) — reusing the
+         exact same App.register/_mountCalc/_wrappers pipeline every meeting-tools
+         panel already uses, unmodified. See functions/api/calculators.js and the
+         embed-mode CSS/script in thesteward.html (the-steward repo) for the other
+         half of this mechanism.
+         Known, accepted trade-off: since the calculator now runs in a cross-origin
+         iframe, its input values no longer auto-resume via _pendingToolStates after
+         closing and reopening the browser mid-meeting (that mechanism reads a
+         calculator's DOM/CalcState directly, in-page — it can't reach into an
+         iframe). Everything else about resuming a meeting is unaffected. -->
+    <script defer>
+      const STEWARD_BASE = "https://thesteward.co.za";
+
+      async function loadStewardCalculators() {
+        const mount = document.getElementById("nav-tools-mount");
+        let calculators = [];
+        try {
+          const res = await fetch(`${STEWARD_BASE}/api/calculators`);
+          if (res.ok) calculators = await res.json();
+        } catch (err) {
+          console.error("Could not reach The Steward's calculator API:", err);
+        }
+
+        calculators.forEach((calc) => {
+          window.App.register(calc.id, {
+            title: calc.title,
+            mount(wrapper) {
+              wrapper.innerHTML = `
+                <div class="glass-panel calc-glass" style="padding:0;overflow:hidden;">
+                  <iframe class="calc-embed-frame" title="${calc.title}"
+                    src="${calc.url}&embed=1"
+                    style="display:block;width:100%;height:100%;min-height:600px;border:none;"
+                    loading="lazy"></iframe>
+                </div>`;
+            },
+          });
+        });
+
+        if (mount) {
+          mount.innerHTML = calculators
+            .map(
+              (calc) => `
+              <a class="tool-lnk" data-calc="${calc.id}" data-href="" data-title="${calc.title}" data-desc="${calc.desc}">
+                ${calc.title}
+              </a>`
+            )
+            .join("\n");
+        }
+      }
+
+      loadStewardCalculators();
+    </script>
+
+    <script>
+      window.MEETING_TOOLS = ["meeting-intro", "timeline", "existing-portfolio", "existing-policies", "budget", "estate-planner", "financial-planning", "wrap-up"];
+      const MEETING_TOOLS = window.MEETING_TOOLS;
+
+      document.addEventListener("DOMContentLoaded", async () => {
+        // Wait for Supabase auth + client data before mounting tools
+        if (window._supabaseClientReady) await window._supabaseClientReady;
+
+        // Apply active adviser from URL
+        const adviser = window.ACTIVE_ADVISER;
+        if (adviser) {
+          const avatar = document.getElementById('guide-avatar');
+          if (avatar) { avatar.src = adviser.img; avatar.alt = adviser.name; }
+          const nameEl = document.getElementById('guide-id-name');
+          if (nameEl) nameEl.textContent = adviser.name;
+          document.title = 'The Steward – ' + adviser.name;
+        }
+
+        // Reset: clear in-memory state and start fresh
+        if (sessionStorage.getItem("fa_reset")) {
+          sessionStorage.removeItem("fa_reset");
+          window.AppSession.clearClientData();
+          window.App._mountCalc("meeting-intro");
+          return;
+        }
+
+        // Always start at meeting-intro — Supabase provides the data, no need to remember last tool
+        window.App._mountCalc("meeting-intro");
+
+        // Preload all tools that have pending state from Supabase so they're ready instantly.
+        // Each tool is isolated — if one throws while mounting/restoring, it's logged and
+        // skipped rather than aborting the loop and silently leaving every tool after it
+        // with no restored data (this has happened twice — a bad restore in one tool was
+        // taking down every tool listed after it in MEETING_TOOLS).
+        setTimeout(() => {
+          MEETING_TOOLS.forEach((id) => {
+            if (id !== "meeting-intro" && window.App._modules[id] && window._pendingToolStates?.[id]) {
+              try {
+                window.App._preloadCalc(id);
+              } catch (err) {
+                console.error(`[preload] "${id}" failed to restore saved state — its data will not appear until this is fixed:`, err);
+              }
+            }
+          });
+          // Only now is every tool's in-memory state guaranteed to reflect what was actually
+          // restored from Supabase — arm autosave here, not before. Autosave firing during
+          // the mount()-then-setState() restore window would capture a tool's blank just-
+          // mounted defaults and write them straight over the real saved data.
+          window._restoreReady = true;
+        }, 0);
+      });
+    </script>
+
+  <script type="module">
+    import { supabase } from "./resources/supabase.js";
+
+    function _seedToolsFromQuestionnaire(q) {
+      const existingPortfolio = window._pendingToolStates["existing-portfolio"]?.extra;
+      const hasPortfolio = existingPortfolio && (
+        existingPortfolio.liquidRows?.length || existingPortfolio.investRows?.length ||
+        existingPortfolio.fixedRows?.length  || existingPortfolio.stLiabRows?.length ||
+        existingPortfolio.ltLiabRows?.length
+      );
+
+      if (!hasPortfolio) {
+        const LIQUID_Q  = new Set(["Savings account","Cheque account","Fixed deposit","Money market account"]);
+        const INVEST_Q  = new Set(["Retirement Annuity (RA)","Pension or provident fund","Unit trust / Investment account","Tax-free savings (TFSA)","Endowment policy","Offshore investment"]);
+        const ST_LIAB_Q = new Set(["Credit card","Store account","Overdraft","Tax debt"]);
+
+        const LIQUID_MAP = { "Savings account":"Savings Account","Cheque account":"Cheque Account","Fixed deposit":"Fixed Deposit","Money market account":"Money Market" };
+        const INVEST_MAP = { "Retirement Annuity (RA)":"Retirement Annuity (RA)","Pension or provident fund":"Pension / Provident Fund","Unit trust / Investment account":"Unit Trust","Tax-free savings (TFSA)":"Tax-Free Savings Account (TFSA)","Endowment policy":"Endowment","Offshore investment":"Offshore Investment" };
+        const FIXED_MAP  = { "Home / Property":"Primary Residence","Vehicle":"Vehicle","Business interest":"Business Interest" };
+        const LIAB_MAP   = { "Home loan / Bond":"Home Loan / Bond","Vehicle finance":"Vehicle Finance","Personal loan":"Personal Loan","Student loan":"Student Loan","Credit card":"Credit Card","Store account":"Store Account","Overdraft":"Overdraft" };
+
+        const strip = v => (v || "").toString().replace(/[^0-9.]/g, "");
+        const liquidRows = [], investRows = [], fixedRows = [], stLiabRows = [], ltLiabRows = [];
+
+        (q.assets || []).forEach(a => {
+          const base = { type: "", typeCustom: "", providerSel: "", providerCustom: "" };
+          if (LIQUID_Q.has(a.type)) {
+            liquidRows.push({ ...base, type: LIQUID_MAP[a.type] || a.type, value: strip(a.value), contrib: "" });
+          } else if (INVEST_Q.has(a.type)) {
+            investRows.push({ ...base, type: INVEST_MAP[a.type] || a.type, rate: "", contrib: "", value: strip(a.value) });
+          } else {
+            const mapped = FIXED_MAP[a.type];
+            fixedRows.push({ ...base, type: mapped || "", typeCustom: mapped ? "" : a.type, value: strip(a.value), purchasePrice: "" });
+          }
+        });
+
+        (q.liabilities || []).forEach(l => {
+          const mapped = LIAB_MAP[l.type];
+          const row = { type: mapped || "", typeCustom: mapped ? "" : l.type, providerSel: "", providerCustom: "", rate: "", monthly: "", balance: strip(l.balance) };
+          if (ST_LIAB_Q.has(l.type)) stLiabRows.push(row); else ltLiabRows.push(row);
+        });
+
+        window._pendingToolStates["existing-portfolio"] = {
+          extra: { liquidRows, investRows, fixedRows, stLiabRows, ltLiabRows }
+        };
+      }
+
+      const existingPolicies = window._pendingToolStates["existing-policies"]?.extra;
+      const hasPolicies = existingPolicies && (existingPolicies.riskRows?.length || existingPolicies.funeralRows?.length || existingPolicies.shortTermRows?.length);
+
+      if (!hasPolicies) {
+        // Risk types (life/disability/incomeProtection/dreadDisease) become one riskRow each with
+        // that type pre-checked; funeral answers become a funeralRow (no covered-people breakdown —
+        // the questionnaire doesn't ask who's covered); investment/unsure answers land in
+        // shortTermRows with a blank type for the adviser to classify during the meeting. The
+        // questionnaire never asks for beneficiary or cover amount, so those stay blank throughout.
+        const RISK_TYPE_MAP = { "Life cover":"life","Disability cover":"disability","Income protection":"incomeProtection","Dread disease / Critical illness":"dreadDisease" };
+        const RISK_INSURERS = new Set(["1Life","Allan Gray","Auto & General","BrightRock","Clientèle","Discovery","Guardrisk","Liberty","MiWay","Momentum","Old Mutual","Outsurance","PPS","Sanlam"]);
+        const riskRows = [], funeralRows = [], shortTermRows = [];
+
+        (q.policies || []).forEach(p => {
+          const inList = RISK_INSURERS.has(p.insurer);
+          const insurerSel = inList ? p.insurer : (p.insurer ? "__custom__" : "");
+          const insurerCustom = inList ? "" : (p.insurer || "");
+          const premium = (p.premium || "").toString().replace(/[^0-9.]/g, "");
+
+          const riskType = RISK_TYPE_MAP[p.type];
+          if (riskType) {
+            riskRows.push({ insurerSel, insurerCustom, premium, beneficiary: "", types: { [riskType]: { cover: "", premium: "", liberty: "" } } });
+          } else if (p.type === "Funeral cover") {
+            funeralRows.push({ insurerSel, insurerCustom, premium, people: [] });
+          } else {
+            shortTermRows.push({ insurerSel, insurerCustom, premium, insuranceType: "", sumInsured: "" });
+          }
+        });
+
+        window._pendingToolStates["existing-policies"] = { extra: { riskRows, funeralRows, shortTermRows } };
+      }
+    }
+
+    // ── Auth + client load (resolves before DOMContentLoaded mounts tools) ────
+    window._supabaseClientReady = (async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) { location.href = "./login.html"; return; }
+
+      window._advisorSession = session;
+
+      // Load logged-in advisor's profile and override the slug-based ACTIVE_ADVISER
+      const { data: advisorProfile } = await supabase
+        .from("advisors")
+        .select("name, logo_url, email")
+        .eq("id", session.user.id)
+        .maybeSingle();
+      if (advisorProfile) {
+        window.ACTIVE_ADVISER = {
+          name:  advisorProfile.name  || window.ACTIVE_ADVISER?.name  || "",
+          img:   advisorProfile.logo_url || window.ACTIVE_ADVISER?.img || "",
+          email: advisorProfile.email || session.user.email || "",
+        };
+      }
+
+      const clientId = new URLSearchParams(location.search).get("client");
+      if (!clientId) { location.href = "./financial-tools.html"; return; }
+      window._activeClientId = clientId;
+
+      if (clientId) {
+        const { data: client } = await supabase
+          .from("clients")
+          .select("session_json, first_name, last_name, email, phone")
+          .eq("id", clientId)
+          .single();
+
+        // Store client name for tools to use before client-details is filled in
+        window._activeClientFirstName = client?.first_name || null;
+
+        // Always reset in-memory state before loading this client
+        window.AppSession?.clearClientData();
+
+        console.log("[steward] raw client:", JSON.stringify(client));
+
+        if (client?.session_json && Object.keys(client.session_json).length > 0) {
+          const payload = client.session_json;
+          console.log("[steward] session_json keys:", Object.keys(payload));
+          console.log("[steward] questionnaire payload:", payload.questionnaire);
+          if (payload.meetingState && window.MeetingState) {
+            window.MeetingState._data = payload.meetingState;
+          }
+          if (payload.tools) {
+            window._pendingToolStates = payload.tools;
+          }
+          if (payload.questionnaire) {
+            _seedToolsFromQuestionnaire(payload.questionnaire);
+            console.log("[steward] _pendingToolStates after seed:", JSON.stringify(window._pendingToolStates));
+            const { questionnaire: _q, ...rest } = payload;
+            supabase.from("clients").update({
+              session_json: rest,
+              questionnaire_submitted_at: null,
+            }).eq("id", clientId);
+          }
+        }
+
+        // Seed client-details with basic client info if the tool has no saved state yet
+        if (client && !window._pendingToolStates["client-details"]) {
+          window._pendingToolStates["client-details"] = {
+            extra: {
+              first_name: client.first_name || "",
+              last_name:  client.last_name  || "",
+              email:      client.email      || "",
+              phone:      client.phone      || "",
+            }
+          };
+        }
+      }
+    })();
+
+    // ── Sync session back to Supabase ─────────────────────────────────────────
+    function _buildPayload() {
+      // Live snapshot of all currently mounted tools
+      const liveTools = window.AppSession?.serializeAll() || {};
+      // Merge with pending states for tools not yet opened this session
+      const pending   = window._pendingToolStates || {};
+      const tools = {};
+      (window.MEETING_TOOLS || []).forEach(id => {
+        const t = liveTools[id] || pending[id];
+        if (t) tools[id] = t;
+      });
+      const meetingState = window.MeetingState?._data || {};
+      return { version: 2, exportedAt: new Date().toISOString(), tools, meetingState };
+    }
+
+    async function syncToSupabase() {
+      if (!window._restoreReady || !window._activeClientId || !window._advisorSession) return;
+      const payload = _buildPayload();
+      const cd = payload.tools?.["client-details"] || {};
+      // Tool state is { inputs: {...}, extra: {...} }; extra comes from getState(), inputs from DOM
+      const src = cd.extra || cd.inputs || cd;
+      const updates = { session_json: payload };
+      if (src.first_name !== undefined) updates.first_name = src.first_name || null;
+      if (src.last_name  !== undefined) updates.last_name  = src.last_name  || null;
+      if (src.email      !== undefined) updates.email      = src.email      || null;
+      if (src.phone      !== undefined) updates.phone      = src.phone      || null;
+      await supabase
+        .from("clients")
+        .update(updates)
+        .eq("id", window._activeClientId);
+    }
+
+    let _syncTimer;
+    let _isDirty = false;
+
+    async function _syncIfDirty() {
+      if (!window._restoreReady || !_isDirty) return;
+      await syncToSupabase();
+      _isDirty = false;
+    }
+
+    function _markDirty() {
+      // Never let a save-worthy signal fire while a client's tools are still mid-restore
+      // (mount() seeds blank defaults before setState() overwrites them with the real
+      // saved data) — an autosave in that window would persist the blanks over Supabase.
+      if (!window._restoreReady) return;
+      _isDirty = true;
+      clearTimeout(_syncTimer);
+      _syncTimer = setTimeout(_syncIfDirty, 3000);
+    }
+
+    window._scheduleStewardSync = _markDirty;
+
+    document.addEventListener("meetingstate", _markDirty);
+    document.addEventListener("input", _markDirty);
+    document.addEventListener("change", _markDirty);
+    window.addEventListener("beforeunload", () => { if (window._restoreReady && _isDirty) syncToSupabase(); });
+    setInterval(_syncIfDirty, 300000);
+  </script>
+
+  </body>
+</html>

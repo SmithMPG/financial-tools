@@ -1,0 +1,1205 @@
+/* style.css - SPA shell styles for thesteward.html, seriti-wealth.html, meeting-dashboard.html.
+   Do NOT load this in standalone calculator pages.
+   Component-specific styles live in their own component files.
+   ─────────────────────────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --navy: #0a0f1e;
+  --navy-2: #0f172a;
+  --navy-3: #1e293b;
+  --navy-4: #334155;
+  --gold: #d4a843;
+  --gold-dim: rgba(212, 168, 67, 0.12);
+  --white: #f1f5f9;
+  --muted: #94a3b8;
+  --dim: #64748b;
+  --line: rgba(255, 255, 255, 0.07);
+  --line-2: rgba(255, 255, 255, 0.04);
+  --fd: "Playfair Display", Georgia, serif;
+  --fb: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --panel-w-left: 280px;
+  --panel-w-right: 300px;
+  --gap: 1rem;
+  --pad: 1rem;
+  --panel-radius: 2rem;
+  --ctrl-h: 2rem;
+  --row-h: 2.75rem;
+}
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  background: #e2e3e4;
+  color: var(--white);
+  font-family: var(--fb);
+  -webkit-font-smoothing: antialiased;
+  display: grid;
+  grid-template-areas: "lf ct rt";
+  grid-template-columns: var(--panel-w-left) minmax(0, 1fr) var(--panel-w-right);
+  grid-template-rows: 1fr;
+  align-items: stretch;
+  justify-content: stretch;
+  gap: var(--gap);
+  padding: var(--pad);
+  height: 100dvh;
+}
+
+::selection {
+  background: var(--gold);
+  color: var(--navy);
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* ─── GLASS PANEL BASE ──────────────────────────────────────── */
+/* Dark (default): glass-panel  ·  Light (frosted white): glass-panel glass-panel--light */
+.glass-panel {
+  background: #0b1221;
+  border-radius: var(--panel-radius);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  position: relative;
+  overflow: hidden;
+  box-shadow:
+    inset 0 2px 2px rgba(255, 255, 255, 0.2),
+    inset 0 10px 20px rgba(255, 255, 255, 0.05),
+    inset 0 -15px 30px rgba(0, 0, 0, 0.4),
+    0 25px 50px -12px rgba(11, 18, 33, 0.5),
+    0 15px 25px -10px rgba(11, 18, 33, 0.3);
+}
+.glass-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 15% 20%, hsla(263, 45%, 25%, 0.4) 0px, transparent 70%), radial-gradient(ellipse 60% 50% at 85% 80%, hsla(180, 50%, 20%, 0.25) 0px, transparent 70%),
+    radial-gradient(ellipse 50% 40% at 50% 110%, hsla(38, 80%, 45%, 0.1) 0px, transparent 60%);
+  z-index: 1;
+  pointer-events: none;
+  animation: liquidShift 12s ease-in-out infinite alternate;
+}
+.glass-panel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  z-index: 2;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+@keyframes liquidShift {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+}
+
+/* Light variant — identical structure, frosted white surface */
+.glass-panel--light {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-color: rgba(255, 255, 255, 0.75);
+  color: var(--navy-3);
+  box-shadow:
+    inset 0 2px 2px rgba(255, 255, 255, 0.9),
+    inset 0 10px 20px rgba(255, 255, 255, 0.15),
+    inset 0 -15px 30px rgba(0, 0, 0, 0.03),
+    0 25px 50px -12px rgba(11, 18, 33, 0.3),
+    0 15px 25px -10px rgba(11, 18, 33, 0.15);
+}
+.glass-panel--light::before {
+  background:
+    radial-gradient(ellipse 80% 60% at 15% 20%, hsla(263, 45%, 75%, 0.07) 0px, transparent 70%), radial-gradient(ellipse 60% 50% at 85% 80%, hsla(180, 50%, 70%, 0.05) 0px, transparent 70%),
+    radial-gradient(ellipse 50% 40% at 50% 110%, hsla(38, 80%, 75%, 0.04) 0px, transparent 60%);
+}
+
+.glass-content {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  height: 100%;
+  min-width: 0;
+}
+
+/* ─── LEFT PANEL ────────────────────────────────────────────── */
+.lf-panel {
+  grid-area: lf;
+}
+
+.logo {
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.logo-txt {
+  font-family: var(--fd);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--white);
+}
+.logo-txt span {
+  color: var(--gold);
+}
+
+.lf-scroll {
+  overflow-y: auto;
+  padding: 1rem 0;
+  flex-grow: 1;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+.lf-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+.lf-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+.grp-label {
+  font-family: var(--fb);
+  font-size: 0.6rem;
+  font-weight: 500;
+  color: var(--dim);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  padding: 0.875rem 1.5rem 0.3rem;
+}
+
+.tool-lnk {
+  border-radius: 8px;
+  margin: 0.25rem 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 1rem;
+  text-decoration: none;
+  color: var(--white);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+.tool-lnk svg {
+  flex-shrink: 0;
+  color: var(--gold);
+  transition: color 0.2s;
+}
+.tool-lnk:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.1);
+  transform: translateX(4px);
+}
+.tool-lnk.active {
+  background: var(--gold-dim);
+  border-color: rgba(212, 168, 67, 0.3);
+}
+.tool-lnk.active svg {
+  color: var(--gold);
+}
+
+.home-lnk {
+  border-color: rgba(212, 168, 67, 0.2);
+  background: rgba(212, 168, 67, 0.06);
+  color: var(--gold);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+.home-lnk svg {
+  color: var(--gold);
+}
+.home-lnk:hover {
+  background: rgba(212, 168, 67, 0.12);
+  border-color: rgba(212, 168, 67, 0.35);
+}
+
+.lf-footer {
+  padding: 1.25rem 1.5rem 1rem;
+  border-top: 1px solid var(--line);
+  flex-shrink: 0;
+}
+
+.lf-copy {
+  font-family: var(--fb);
+  font-size: 0.6rem;
+  color: var(--dim);
+  text-align: center;
+  margin-top: 0.75rem;
+  line-height: 1.6;
+}
+.lf-copy a {
+  color: var(--dim);
+  text-decoration: none;
+}
+.lf-copy a:hover {
+  color: var(--muted);
+}
+
+/* ─── WORKSPACE (CENTER) ─────────────────────────────────────── */
+.workspace {
+  grid-area: ct;
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-height: 0;
+  min-width: 0;
+}
+
+/* ─── CALC GLASS CARD ────────────────────────────────────────── */
+.glass-panel.calc-glass {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+}
+
+/* ─── CALC LAYOUT ────────────────────────────────────────────── */
+.calc-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  padding: 1rem;
+  gap: 1rem;
+}
+.calc-layout .calc-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0;
+  border-top: none;
+  background: none;
+}
+.calc-layout .tool-nav {
+  padding-left: 0;
+  padding-right: 0;
+}
+.calc-layout .calc-panel-footer {
+  margin: 0 -1rem -1rem;
+  width: calc(100% + 2rem);
+}
+@media (max-width: 1000px) {
+  .calc-layout {
+    padding: 0;
+    gap: 0.75rem;
+  }
+  .calc-layout .tool-hero-zone {
+    padding: 0;
+  }
+  .calc-layout .tool-hero-zone .ch-hero {
+    border-radius: 0;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6);
+  }
+  .calc-layout .calc-inputs {
+    padding: 0 0.75rem;
+  }
+  .calc-layout .calc-panel-footer {
+    margin: 0;
+    width: 100%;
+  }
+}
+
+.calc-nav {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 1.25rem;
+  border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
+}
+.calc-nav-end {
+  display: flex;
+  justify-content: flex-end;
+}
+.calc-nav-title {
+  font-family: var(--fd);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--white);
+  letter-spacing: -0.01em;
+  grid-column: 2;
+  text-align: center;
+}
+
+.tool-hero-zone {
+  flex-shrink: 0;
+}
+.tool-hero-zone .ch-hero {
+  border-radius: 1.25rem;
+  margin-bottom: 0;
+}
+
+.chart-zone {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.chart-zone .chart-container {
+  flex: 1;
+  min-height: 120px;
+  position: relative;
+}
+
+.calc-inputs {
+  flex-shrink: 0;
+  min-width: 0;
+  padding: 0.5rem 1rem 0.75rem;
+  border-top: 1px solid var(--line);
+  background: rgba(0, 0, 0, 0.18);
+  position: relative;
+}
+
+/* ── InputZone: grid-stacked page navigation ─────────────────────────────── */
+
+/* Viewport: auto-sizes to the tallest page - no JS, no calc() math. */
+.iz-viewport {
+  display: grid;
+  grid-template-areas: "stack";
+}
+
+/* Pages share the same grid cell. Inactive pages stay in layout flow (opacity,
+   not display:none) so the grid can always measure the tallest page. */
+.iz-page {
+  grid-area: stack;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s;
+}
+.iz-page.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Every direct child of a page occupies exactly one --row-h slot.
+   iz-inner-panel is exempt: it holds multi-row content (nested tab panels, etc). */
+.iz-page > *:not(.iz-inner-panel) {
+  height: var(--row-h);
+  margin: 0;
+}
+
+/* ── Scroll-snap variant: pages stack vertically, viewport clips to one page ─ */
+/* Add class iz-snap to .iz-viewport to enable. Height set by JS after mount.   */
+.iz-viewport.iz-snap {
+  display: block;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.iz-viewport.iz-snap::-webkit-scrollbar {
+  display: none;
+}
+.iz-viewport.iz-snap > .iz-page {
+  grid-area: unset;
+  opacity: 1;
+  pointer-events: auto;
+  transition: none;
+  scroll-snap-align: start;
+  min-height: 100%;
+}
+
+/* Dots - vertical page indicators, right edge of .calc-inputs */
+.iz-dots {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  z-index: 6;
+}
+.iz-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition:
+    background 0.25s,
+    transform 0.25s;
+  flex-shrink: 0;
+  box-sizing: content-box;
+}
+.iz-dot:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+.iz-dot.active {
+  background: #d4a843;
+  transform: scale(1.35);
+}
+
+/* ── Columned rows: button-navigated column carousel ────────────────────── */
+/* No scroll - columns slide via transform. Navigation is button-only.       */
+/* Rows sharing the same data-iz-linked group are synced by the tool JS.     */
+.iz-col-row {
+  overflow: hidden;
+  height: var(--row-h);
+  flex-shrink: 0;
+}
+.iz-col-track {
+  display: flex;
+  height: 100%;
+  transition: transform 0.28s ease;
+  will-change: transform;
+}
+.iz-col {
+  flex: 0 0 100%;
+  height: var(--row-h);
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.iz-col > * {
+  height: var(--row-h);
+  margin: 0;
+}
+
+.calc-inputs .labelWithTip {
+  color: var(--muted);
+  display: inline-flex;
+  transform-origin: left center;
+  transition:
+    color 0.2s,
+    transform 0.2s ease;
+}
+.calc-inputs .labelWithTip[data-field]:hover {
+  color: var(--white);
+  transform: scale(1.06);
+}
+.calc-inputs .slider-input {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--white);
+}
+.calc-inputs .slider-group:last-child {
+  margin-bottom: 0;
+}
+
+/* ─── HOME VIEW ──────────────────────────────────────────────── */
+#home-view {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+  flex: 1;
+  min-height: 0;
+  overflow: visible;
+}
+
+.landing-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3rem 2rem;
+  flex: 2 1 0;
+  min-height: 0;
+}
+.hero-headline {
+  font-family: var(--fd);
+  font-size: clamp(1.35rem, 3.2vw, 2.25rem);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: #fff;
+  max-width: 640px;
+  margin: 0 auto 1.25rem;
+  opacity: 0;
+  animation: heroFadeUp 0.7s 0.25s ease forwards;
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+.hero-headline em {
+  font-style: italic;
+  color: var(--gold);
+}
+.hero-sub {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: var(--muted);
+  max-width: 560px;
+  margin: 0 auto;
+  opacity: 0;
+  animation: heroFadeUp 0.7s 0.38s ease forwards;
+}
+@keyframes heroFadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ─── NAV TOOLTIP ────────────────────────────────────────────── */
+#nav-tooltip {
+  position: fixed;
+  z-index: 300;
+  max-width: 220px;
+  padding: 0.5rem 0.75rem;
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.5),
+    0 8px 24px rgba(0, 0, 0, 0.35);
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.45;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-4px, -50%);
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+  backdrop-filter: blur(8px);
+  margin-left: 1rem;
+}
+#nav-tooltip.visible {
+  opacity: 1;
+  transform: translate(0, -50%);
+}
+#nav-tooltip::before {
+  content: "";
+  position: absolute;
+  left: -8px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-width: 7px 8px 7px 0;
+  border-style: solid;
+  border-color: transparent rgba(15, 23, 42, 0.95) transparent transparent;
+}
+@media (max-width: 1000px) {
+  #nav-tooltip {
+    display: none !important;
+  }
+}
+/* ─── GUIDE PANEL (RIGHT) ────────────────────────────────────── */
+.guide-panel {
+  grid-area: rt;
+}
+.guide-shimmer {
+  position: absolute;
+  inset: 0;
+  z-index: 15;
+  pointer-events: none;
+  border-radius: var(--panel-radius);
+  overflow: hidden;
+  opacity: 0;
+}
+.guide-shimmer::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(105deg, transparent 30%, rgba(255, 255, 255, 0.07) 50%, transparent 70%);
+  transform: skewX(-15deg);
+}
+.guide-shimmer.shimmer-active {
+  opacity: 1;
+  animation: guideShimmer 0.65s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+@keyframes guideShimmer {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+.guide-shimmer.shimmer-active::after {
+  animation: shimmerSweep 0.65s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+@keyframes shimmerSweep {
+  from {
+    left: -60%;
+  }
+  to {
+    left: 160%;
+  }
+}
+
+.guide-advisor-block {
+  display: contents;
+}
+
+.guide-profile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  padding: 1.5rem 1.5rem 1.25rem;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.guide-profile > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.guide-profile:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.guide-avatar {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  border: 2px solid var(--gold);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.guide-id-name {
+  font-family: var(--fd);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--white);
+  line-height: 1.2;
+  white-space: nowrap;
+}
+.guide-id-role {
+  font-family: var(--fb);
+  font-size: 0.675rem;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-top: 0.3rem;
+}
+.guide-social {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-top: 0.75rem;
+}
+.guide-social-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--muted);
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+.guide-social-icon svg {
+  width: 17px;
+  height: 17px;
+}
+.guide-social-icon:hover {
+  color: var(--gold);
+  border-color: rgba(212, 168, 67, 0.45);
+  background: rgba(212, 168, 67, 0.07);
+}
+
+.guide-cta-row {
+  display: flex;
+  justify-content: center;
+  padding: 0 1.5rem 1.25rem;
+  border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
+}
+.guide-cta-row .guide-callback-btn {
+  width: 100%;
+  max-width: 260px;
+  margin: 0 auto;
+  padding: 0.5rem 1rem;
+  font-size: 0.8rem;
+}
+
+.guide-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 1.5rem;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+.guide-body::-webkit-scrollbar {
+  width: 4px;
+}
+.guide-body::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+.guide-heading {
+  font-family: var(--fd);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 0.875rem;
+  transition: opacity 0.15s;
+}
+.guide-heading.guide-arrive {
+  animation: guideArrive 0.25s ease-out forwards;
+}
+@keyframes guideArrive {
+  from {
+    opacity: 0;
+    transform: translateX(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+.guide-text {
+  font-size: 0.8125rem;
+  line-height: 1.75;
+  color: var(--muted);
+  transition: opacity 0.15s;
+}
+.guide-text .ch-guide-val {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--white);
+  margin: 0 0 0.875rem;
+  line-height: 1.1;
+  word-break: break-all;
+}
+.guide-text p + p {
+  margin-top: 0.875rem;
+}
+.guide-breakdown {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+}
+.guide-breakdown td {
+  padding: 0.3rem 0;
+  color: rgba(255, 255, 255, 0.7);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+.guide-breakdown td:last-child {
+  text-align: right;
+  color: var(--white);
+  font-weight: 600;
+}
+.guide-breakdown tr:last-child td {
+  border-bottom: none;
+}
+.guide-breakdown .guide-section-row td,
+.guide-section-label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.3);
+}
+.guide-breakdown .guide-section-row td {
+  padding-top: 0.75rem;
+  padding-bottom: 0.1rem;
+  border-bottom: none;
+}
+.guide-section-label {
+  margin: 0.75rem 0 0.1rem;
+}
+.guide-pct {
+  font-size: 0.7rem;
+  color: #4ade80;
+  font-weight: 400;
+}
+.guide-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  margin-right: 6px;
+  flex-shrink: 0;
+  vertical-align: middle;
+  position: relative;
+  top: -1px;
+}
+
+.guide-body.fading .guide-heading,
+.guide-body.fading .guide-text {
+  opacity: 0;
+}
+
+.guide-footer {
+  padding: 1.25rem 1.5rem;
+  border-top: 1px solid var(--line);
+  flex-shrink: 0;
+}
+.guide-legal {
+  font-family: var(--fb);
+  font-size: 0.575rem;
+  color: var(--dim);
+  line-height: 1.6;
+  margin-top: 0.75rem;
+  text-align: center;
+}
+
+/* ─── MOBILE DRAWER BACKDROP ─────────────────────────────────── */
+.drawer-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 10, 20, 0.6);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 90;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.32s ease;
+}
+
+/* ─── CALC PANEL FOOTER ─────────────────────────────────────── */
+.calc-panel-footer {
+  display: none;
+}
+
+/* ─── MOBILE TOOLBAR ──────────────────────────────────────────── */
+.mobile-toolbar {
+  display: none;
+}
+
+/* ─── RESPONSIVE ─────────────────────────────────────────────── */
+@media (max-width: 1000px) {
+  body {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    gap: 0;
+    background: #0d0f14;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .mobile-menu {
+    display: none !important;
+  }
+
+  .mobile-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    order: -1;
+    position: sticky;
+    top: 0;
+    z-index: 95;
+    flex-shrink: 0;
+    padding: 1.1rem 0.75rem;
+    background: rgba(13, 15, 20, 0.92);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  body:has(.workspace.calc-active) .mobile-toolbar {
+    display: none;
+  }
+
+  .mt-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    position: absolute;
+    left: 0.75rem;
+    color: var(--muted);
+    background: transparent;
+    border: none;
+    font-family: var(--fd);
+    font-size: 0.9rem;
+    font-style: italic;
+    font-weight: 700;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  .mt-btn:active {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--white);
+  }
+
+  .mt-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+  }
+  .mt-logo svg {
+    width: 24px;
+    height: 24px;
+  }
+  .mt-logo-txt {
+    font-family: var(--fd);
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--white);
+  }
+  .mt-logo-txt span {
+    color: var(--gold);
+  }
+
+  .calc-panel-footer {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+    flex-shrink: 0;
+  }
+
+  .workspace {
+    border-radius: 0;
+    width: 100%;
+    flex: 0 0 auto;
+    min-height: 0;
+    overflow: visible;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .workspace.calc-active {
+    flex: 1 1 auto;
+    height: 100%;
+  }
+
+  /* Home screen: unwrap .workspace/#home-view/.guide-panel/.glass-content so
+     the hero, "note on stewardship" text, tutorial, and advisor profile all
+     become direct siblings in body's flex column and can be reordered into
+     hero → note → tutorial → advisor via `order`, independent of the desktop
+     3-column grid (which still needs .guide-panel as a single grid child). */
+  body:not(:has(.workspace.calc-active)) .workspace,
+  body:not(:has(.workspace.calc-active)) #home-view,
+  body:not(:has(.workspace.calc-active)) .guide-panel,
+  body:not(:has(.workspace.calc-active)) .guide-panel > .glass-content,
+  body:not(:has(.workspace.calc-active)) .guide-advisor-block {
+    display: contents;
+  }
+  body:not(:has(.workspace.calc-active)) .guide-shimmer {
+    display: none;
+  }
+  .landing-hero {
+    order: 1;
+  }
+  body:not(:has(.workspace.calc-active)) .guide-body {
+    order: 2;
+    margin-top: 0.4rem;
+  }
+  #game-panel {
+    order: 3;
+    margin-top: 0.4rem;
+  }
+  body:not(:has(.workspace.calc-active)) .guide-profile,
+  body:not(:has(.workspace.calc-active)) .guide-cta-row {
+    order: 4;
+  }
+  body:not(:has(.workspace.calc-active)) .guide-profile {
+    margin-top: 0.4rem;
+  }
+  body:not(:has(.workspace.calc-active)) .guide-footer {
+    order: 5;
+  }
+  body:not(:has(.workspace.calc-active)) .guide-body,
+  body:not(:has(.workspace.calc-active)) .guide-profile,
+  body:not(:has(.workspace.calc-active)) .guide-cta-row,
+  body:not(:has(.workspace.calc-active)) .guide-footer {
+    width: 100%;
+    background: #0b1221;
+  }
+  body:not(:has(.workspace.calc-active)) .guide-cta-row {
+    border-bottom: none;
+  }
+
+  /* Drop the 3D bevel/edge effect on mobile — keep the glass background,
+     lose the inset-highlight box-shadow and border. Panels that become
+     off-canvas drawers (.lf-panel.open, .guide-panel.open) re-add their
+     own directional shadow further down and win on specificity. */
+  .glass-panel {
+    border: none;
+    box-shadow: none;
+  }
+
+  /* Home-screen sections go fully flat on mobile: solid color, no blur,
+     no animated gradient/noise overlay — alternating light/dark bands
+     instead of glass everywhere. Desktop is untouched. */
+  .mobile-panel--light,
+  .mobile-panel--dark {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-radius: 0;
+  }
+  .mobile-panel--light::before,
+  .mobile-panel--light::after,
+  .mobile-panel--dark::before,
+  .mobile-panel--dark::after {
+    display: none;
+  }
+  .mobile-panel--light {
+    background: #f7f4ec;
+  }
+  .mobile-panel--dark {
+    background: #0b1221;
+  }
+  .mobile-panel--light .hero-headline {
+    color: var(--navy);
+    text-shadow: none;
+  }
+  .mobile-panel--light .hero-headline em {
+    color: #a9791f;
+  }
+  .mobile-panel--light .hero-sub {
+    color: var(--navy-4);
+  }
+
+  .glass-panel.calc-glass {
+    border-radius: 0;
+  }
+
+  #home-view {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    overflow: visible;
+  }
+
+  .landing-hero {
+    flex: 0 0 auto;
+    padding: 1.25rem 1.5rem;
+  }
+
+  .lf-panel {
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: 82%;
+    max-width: 320px;
+    border-radius: 0 var(--panel-radius) var(--panel-radius) 0;
+    border-left: none;
+    z-index: 100;
+    transform: translateX(-100%);
+    transition:
+      transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 0.35s;
+    will-change: transform;
+  }
+  .lf-panel.open {
+    transform: translateX(0);
+    box-shadow:
+      inset 0 2px 2px rgba(255, 255, 255, 0.2),
+      inset 0 10px 20px rgba(255, 255, 255, 0.05),
+      8px 0 40px rgba(0, 0, 0, 0.6);
+  }
+
+  /* Home screen: the guide panel is just the second card in the scrollable
+     stack (hero → guide → arcade), not an off-canvas drawer. */
+  .guide-panel {
+    position: static;
+    width: 100%;
+    max-width: none;
+    flex-shrink: 0;
+    margin-top: 0.4rem;
+  }
+  .guide-panel .guide-body {
+    flex: 0 0 auto;
+    overflow-y: visible;
+  }
+  body:has(.workspace.calc-active) .guide-panel .guide-body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+  /* Once a calculator is open, restore the original off-canvas drawer. */
+  body:has(.workspace.calc-active) .guide-panel {
+    position: fixed;
+    inset: 0 0 0 auto;
+    width: 82%;
+    max-width: 340px;
+    border-radius: var(--panel-radius) 0 0 var(--panel-radius);
+    border-right: none;
+    z-index: 100;
+    transform: translateX(100%);
+    transition:
+      transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 0.35s;
+    will-change: transform;
+    margin-top: 0;
+  }
+  body:has(.workspace.calc-active) .guide-panel.open {
+    transform: translateX(0);
+    box-shadow:
+      inset 0 2px 2px rgba(255, 255, 255, 0.2),
+      inset 0 10px 20px rgba(255, 255, 255, 0.05),
+      -8px 0 40px rgba(0, 0, 0, 0.6);
+  }
+
+  .drawer-backdrop {
+    display: block;
+  }
+
+  .calc-nav {
+    display: none;
+  }
+
+  .hero-headline {
+    font-size: clamp(1.4rem, 5vw, 2rem);
+    margin-bottom: 0.75rem;
+  }
+
+  .hero-sub {
+    font-size: 0.8rem;
+  }
+
+  /* ── Fix wrapping label alignment ── */
+  .slider-header {
+    align-items: flex-start;
+  }
+}

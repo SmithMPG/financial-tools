@@ -1,0 +1,996 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Financial Tools – Meeting Tools Demo</title>
+    <meta name="description" content="Financial planning tools for client meetings." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap"
+      rel="stylesheet"
+      media="print"
+      onload="this.media = 'all'" />
+    <noscript>
+      <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet" />
+    </noscript>
+
+    <link rel="icon" type="image/svg+xml" href="/resources/favicon.svg" />
+    <link rel="stylesheet" href="/style.css" />
+    <link rel="stylesheet" href="/tools/meeting-tools/meeting-shared.css" />
+
+    <style>
+      .nav-tabs {
+        display: flex;
+        gap: 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        margin: 0.5rem 0 0;
+        flex-shrink: 0;
+      }
+      .nav-tab {
+        flex: 1;
+        background: none;
+        border: none;
+        border-bottom: 2px solid transparent;
+        color: var(--dim, #64748b);
+        font-family: var(--fb, sans-serif);
+        font-size: 0.72rem;
+        font-weight: 600;
+        padding: 0.5rem 0.25rem 0.45rem;
+        cursor: pointer;
+        transition: color 0.15s, border-color 0.15s;
+        letter-spacing: 0.02em;
+        margin-bottom: -1px;
+      }
+      .nav-tab:hover { color: rgba(212, 168, 67, 0.75); }
+      .nav-tab.active {
+        color: var(--gold, #d4a843);
+        border-bottom-color: var(--gold, #d4a843);
+      }
+      .nav-page { display: none; }
+      .nav-page.active { display: flex; flex-direction: column; }
+      .badge-beta, .badge-soon {
+        margin-left: auto;
+        font-size: 0.65rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        background: rgba(212, 168, 67, 0.1);
+        color: #d4a843;
+        padding: 2px 6px;
+        border-radius: 4px;
+        border: 1px solid rgba(212, 168, 67, 0.3);
+      }
+      .tool-lnk:has(.badge-soon) {
+        pointer-events: none;
+        opacity: 0.45;
+      }
+      /* ── Clip translateX hover bleed in panels ── */
+      .lf-scroll, .app-drawer, .guide-body { overflow-x: hidden; }
+      /* ── App Drawers ── */
+      .app-drawer-trigger {
+        flex-shrink: 0;
+        position: relative;
+        z-index: 20;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        padding: 0.45rem 1rem;
+        background: none;
+        border: none;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        color: rgba(255, 255, 255, 0.18);
+        cursor: pointer;
+        transition: color 0.2s, border-color 0.2s;
+      }
+      .app-drawer-trigger:hover,
+      .app-drawer-trigger.open {
+        color: rgba(255, 255, 255, 0.45);
+        border-top-color: rgba(255, 255, 255, 0.1);
+      }
+      .app-drawer-trigger svg { transition: transform 0.28s ease; flex-shrink: 0; }
+      .app-drawer-trigger.open svg { transform: rotate(180deg); }
+      .app-drawer {
+        position: absolute;
+        left: 0; right: 0; bottom: 0;
+        max-height: 72%;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+        background: #0b1221;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        z-index: 15;
+        transform: translateY(100%);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        padding-bottom: 1.5rem;
+      }
+      .app-drawer.open { transform: translateY(0); }
+      /* ── Editable advisor profile ── */
+      .guide-avatar-wrap {
+        position: relative;
+        flex-shrink: 0;
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        cursor: pointer;
+        border: 2px solid var(--gold, #d4a843);
+      }
+      .guide-avatar-wrap .guide-avatar { border: none; }
+      .guide-avatar-overlay {
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        background: rgba(0,0,0,0.55);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.2s;
+        pointer-events: none;
+      }
+      .guide-avatar-wrap:hover .guide-avatar-overlay { opacity: 1; }
+      .guide-id-name[contenteditable] {
+        outline: none;
+        cursor: text;
+        border-bottom: 1px solid transparent;
+        transition: border-color 0.2s;
+        min-width: 40px;
+      }
+      .guide-id-name[contenteditable]:hover  { border-bottom-color: rgba(212,168,67,0.4); }
+      .guide-id-name[contenteditable]:focus  { border-bottom-color: var(--gold, #d4a843); }
+      .guide-id-name:empty::before {
+        content: attr(data-placeholder);
+        color: rgba(255,255,255,0.25);
+        pointer-events: none;
+      }
+
+      /* ── Drawer dim overlay ── */
+      .lf-panel .logo, .lf-panel .lf-scroll, .lf-panel .lf-footer,
+      .guide-panel .guide-profile, .guide-panel .guide-shimmer,
+      .guide-panel .guide-body, .guide-panel .guide-footer {
+        transition: opacity 0.25s;
+      }
+      .lf-panel.drawer-open .logo,
+      .lf-panel.drawer-open .lf-scroll,
+      .lf-panel.drawer-open .lf-footer { opacity: 0.18; pointer-events: none; }
+      .guide-panel.drawer-open .guide-profile,
+      .guide-panel.drawer-open .guide-shimmer,
+      .guide-panel.drawer-open .guide-body,
+      .guide-panel.drawer-open .guide-footer { opacity: 0.18; pointer-events: none; }
+      /* ── Drawer client actions ── */
+      .drawer-ul-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0.65rem 1rem;
+        background: none;
+        border: none;
+        color: rgba(255, 255, 255, 0.45);
+        font-family: var(--fb, sans-serif);
+        font-size: 0.8125rem;
+        font-weight: 500;
+        cursor: pointer;
+        text-align: left;
+        width: 100%;
+        transition: color 0.2s;
+      }
+      .drawer-ul-btn:hover { color: rgba(255, 255, 255, 0.75); }
+      .drawer-ul-btn svg { color: rgba(255, 255, 255, 0.35); flex-shrink: 0; transition: color 0.2s; }
+      .drawer-ul-btn:hover svg { color: rgba(255, 255, 255, 0.65); }
+    </style>
+  </head>
+
+  <body>
+    <!-- ─── DRAWER BACKDROP ───────────────────────────────────────────── -->
+    <div class="drawer-backdrop" id="drawer-backdrop"></div>
+
+    <!-- ─── LEFT PANEL: NAVIGATION ──────────────────────────────────── -->
+    <nav class="glass-panel lf-panel" id="lf-panel">
+      <div class="glass-content">
+        <a class="logo" id="home-link" href="/" aria-label="Go to home">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <path d="M12 22C12 22 20 18 20 12V5L12 2L4 5V12C4 18 12 22 12 22Z" stroke="#d4a843" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          <span class="logo-txt">The <span>Steward</span></span>
+        </a>
+
+        <!-- ── Meeting flow ── -->
+        <div class="lf-scroll">
+
+          <div class="grp-label">Getting Started</div>
+
+          <a
+            class="tool-lnk"
+            data-calc="meeting-intro"
+            data-href="/tools/meeting-tools/meeting-intro.js"
+            data-title="Meeting Intro"
+            data-desc="A 7-slide presentation to open a client meeting - welcome, agenda, advisor intro, life considerations, goals, building blocks, and FAIS handoff.">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="3" width="20" height="13" rx="2"/>
+              <line x1="8" y1="21" x2="16" y2="21"/>
+              <line x1="12" y1="16" x2="12" y2="21"/>
+            </svg>
+            Meeting Intro
+          </a>
+
+          <a
+            class="tool-lnk"
+            data-calc="timeline"
+            data-href="/tools/meeting-tools/timeline.js"
+            data-title="Timeline"
+            data-desc="A chronological feed of the client's life — personal milestones on one side, financial planning items on the other.">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="3" y1="12" x2="21" y2="12"/>
+              <circle cx="7" cy="12" r="2"/>
+              <circle cx="17" cy="12" r="2"/>
+            </svg>
+            Timeline
+          </a>
+
+          <div class="grp-label">Your Current Position</div>
+
+          <a
+            class="tool-lnk"
+            data-calc="existing-portfolio"
+            data-href="/tools/meeting-tools/existing-portfolio.js"
+            data-title="Existing Portfolio"
+            data-desc="Capture the client's investments, assets, and liabilities to understand their current financial position.">
+            <span class="tool-step">1</span>
+            Existing Portfolio
+          </a>
+
+          <a
+            class="tool-lnk"
+            data-calc="existing-policies"
+            data-href="/tools/meeting-tools/existing-policies.js"
+            data-title="Existing Policies"
+            data-desc="Capture the client's current risk cover — life, disability, income protection, dread disease, funeral, and other policies.">
+            <span class="tool-step">2</span>
+            Existing Policies
+          </a>
+
+          <a
+            class="tool-lnk"
+            data-calc="budget"
+            data-href="/tools/meeting-tools/cashflow.js"
+            data-title="Cashflow"
+            data-desc="Map every rand to a purpose. Enter your income, work through ten spending categories, and see your surplus - or deficit - in real time.">
+            <span class="tool-step">3</span>
+            Cashflow
+          </a>
+
+          <div class="grp-label">Your Goals &amp; Needs</div>
+
+          <a
+            class="tool-lnk"
+            data-calc="estate-planner"
+            data-href="/tools/meeting-tools/estate-planning.js"
+            data-title="Estate Planning"
+            data-desc="Map your estate, calculate executor fees, estate duty, and CGT on death — the liquidity gap feeds directly into life cover needs.">
+            <span class="tool-step">1</span>
+            Estate Planning
+          </a>
+
+          <a
+            class="tool-lnk"
+            data-calc="life-cover"
+            data-href="/tools/meeting-tools/cover-planning.js"
+            data-title="Cover Planning"
+            data-desc="Select what each cover pillar protects — estate gap, income replacement, education, and liabilities all pull through from the steps above.">
+            <span class="tool-step">2</span>
+            Cover Planning
+          </a>
+
+          <a
+            class="tool-lnk"
+            data-calc="investment-goals"
+            data-href="/tools/meeting-tools/investment-planning.js"
+            data-title="Investment Planning"
+            data-desc="Capture each investment goal — the description, wrapper, and lump sum needed.">
+            <span class="tool-step">3</span>
+            Investment Planning
+          </a>
+
+          <div class="grp-label">Your Plan</div>
+
+          <a
+            class="tool-lnk"
+            data-calc="wrap-up"
+            data-href="/tools/meeting-tools/wrapping-up.js"
+            data-title="Wrapping Up"
+            data-desc="Capture will status, service rating, and referrals to close the meeting.">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            Wrap Up
+          </a>
+
+        </div>
+
+        <div class="lf-footer">
+          <p class="lf-copy">
+            &copy; 2026 Matthew PG Smith<br />
+            <a href="mailto:matthew.smith@liblink.co.za">matthew.smith@liblink.co.za</a>
+          </p>
+        </div>
+
+        <button class="app-drawer-trigger" id="lf-drawer-trigger" aria-label="Open tools">
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="18 15 12 9 6 15" />
+          </svg>
+        </button>
+
+        <div class="app-drawer" id="lf-drawer">
+          <div class="grp-label">Build Wealth</div>
+
+          <a
+            class="tool-lnk"
+            data-calc="investment"
+            data-href="/tools/standalone/investment-calculator.js"
+            data-title="Investment Calculator"
+            data-desc="Project how your lump sum or monthly contributions grow over time, and see exactly how much fees are quietly costing you.">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+              <polyline points="17 6 23 6 23 12" />
+            </svg>
+            Investment Calculator
+          </a>
+
+          <a
+            class="tool-lnk"
+            data-calc="tfsa"
+            data-href="/tools/standalone/tfsa-calculator.js"
+            data-title="TFSA Calculator"
+            data-desc="Project your Tax-Free Savings Account growth over time and track how close you are to the R500,000 lifetime contribution cap.">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 8v8M8 12h8" />
+            </svg>
+            TFSA Calculator
+          </a>
+
+          <a
+            class="tool-lnk"
+            data-calc="retirement"
+            data-href="/tools/standalone/retirement-calculator.js"
+            data-title="Retirement Calculator"
+            data-desc="Work backwards from your retirement income goal to exactly what you need to save today. See the gap - then see how to close it.">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg>
+            Retirement Calculator
+          </a>
+
+          <a
+            class="tool-lnk"
+            data-calc="post-retirement"
+            data-href="/tools/standalone/post-retirement-calculator.js"
+            data-title="Post-Retirement Calculator"
+            data-desc="Model your retirement income from a lump sum. See what you'll draw each year, how long your capital lasts, and how a life annuity compares.">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            Post-Retirement Calculator
+          </a>
+
+          <div class="grp-label">Manage Debt</div>
+
+          <a
+            class="tool-lnk"
+            data-calc="loan"
+            data-href="/tools/standalone/loan-calculator.js"
+            data-title="Loan Calculator"
+            data-desc="Calculate your repayments, total interest, and discover how much time and money a small extra payment each month can save you.">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="1" x2="12" y2="23" />
+              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+            </svg>
+            Loan Calculator
+          </a>
+
+          <div class="grp-label">Protect</div>
+
+          <a
+            class="tool-lnk"
+            data-calc="life-cover-calc"
+            data-href="/tools/standalone/life-cover-calculator.js"
+            data-title="Life Cover Calculator"
+            data-desc="Work out exactly how much life cover you need — immediate costs, income replacement for each dependant, and all debts that need to be settled at death.">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+            </svg>
+            Life Cover Calculator
+          </a>
+
+          <div class="grp-label">Plan</div>
+
+          <a
+            class="tool-lnk"
+            data-calc="tax"
+            data-href="/tools/standalone/tax-calculator.js"
+            data-title="Tax & Rebate Calculator"
+            data-desc="See what SARS takes, what your age rebate and medical credits claw back, and how retirement contributions reduce your taxable income. Based on the 2026/27 tax tables.">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+              <line x1="16" y1="13" x2="8" y2="13" />
+              <line x1="16" y1="17" x2="8" y2="17" />
+            </svg>
+            Tax Calculator
+          </a>
+
+          <a
+            class="tool-lnk"
+            data-calc="education"
+            data-href="/tools/standalone/education-calculator.js"
+            data-title="University Calculator"
+            data-desc="Project the full cost of a university education - tuition, accommodation, and living costs - adjusted for education inflation. Know the number before the bill arrives.">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+              <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+            </svg>
+            University Calculator
+          </a>
+
+        </div>
+      </div>
+    </nav>
+
+    <!-- ─── WORKSPACE (CENTER) ──────────────────────────────────────── -->
+    <main class="workspace" id="workspace">
+      <div id="home-view"></div>
+    </main>
+
+    <!-- ─── GUIDE PANEL (RIGHT) ─────────────────────────────────────── -->
+    <aside class="glass-panel guide-panel" id="guide-panel">
+      <div class="guide-shimmer" id="guide-shimmer" aria-hidden="true"></div>
+      <div class="glass-content">
+        <div class="guide-profile" id="guide-profile-header">
+          <div class="guide-avatar-wrap" id="guide-avatar-wrap" title="Click to upload photo">
+            <svg class="guide-avatar" id="guide-avatar-placeholder" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="50" cy="50" r="50" fill="#1e293b"/>
+              <circle cx="50" cy="37" r="19" fill="#475569"/>
+              <ellipse cx="50" cy="84" rx="32" ry="24" fill="#475569"/>
+            </svg>
+            <img class="guide-avatar" id="guide-avatar" alt="Advisor photo" style="display:none">
+            <div class="guide-avatar-overlay">
+              <svg width="20" height="20" fill="none" stroke="white" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                <circle cx="12" cy="13" r="4"/>
+              </svg>
+            </div>
+            <input type="file" id="guide-avatar-upload" accept="image/*" style="display:none">
+          </div>
+          <div>
+            <div class="guide-id-name" id="guide-id-name" contenteditable="true" spellcheck="false" data-placeholder="Your Name"></div>
+            <div class="guide-id-role">Financial Advisor</div>
+          </div>
+        </div>
+
+        <div class="guide-body" id="guide-body">
+          <h3 class="guide-heading" id="guide-heading">Opening the meeting</h3>
+          <div class="guide-text" id="guide-text">
+          </div>
+        </div>
+
+        <div class="guide-footer">
+          <p class="guide-legal">For illustrative purposes only. Not financial advice under the FAIS Act. A Financial Needs Analysis is required before specific advice can be given.</p>
+        </div>
+
+        <!-- ── Output tools drawer ── -->
+        <button class="app-drawer-trigger" id="rt-drawer-trigger" aria-label="Open output tools">
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="18 15 12 9 6 15" />
+          </svg>
+        </button>
+
+        <div class="app-drawer" id="rt-drawer">
+          <a
+            class="tool-lnk"
+            data-calc="meeting-summary"
+            data-href="/tools/fa-tools/meeting-summary.js"
+            data-title="Meeting Summary"
+            data-desc="Post-meeting notes - proposed solutions, observations, next steps, and a formatted summary email.">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            </svg>
+            Meeting Summary
+          </a>
+
+          <a
+            class="tool-lnk"
+            data-calc="roa"
+            data-href="/tools/fa-tools/record-of-advice.js"
+            data-title="Record of Advice"
+            data-desc="8-section narrative RoA for your compliance file. Copy to clipboard when done.">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+              <line x1="16" y1="13" x2="8" y2="13" />
+              <line x1="16" y1="17" x2="8" y2="17" />
+              <polyline points="10 9 9 9 8 9" />
+            </svg>
+            Record of Advice
+          </a>
+
+          <button class="tool-lnk" id="demo-reset-btn">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+              <polyline points="1 4 1 10 7 10" />
+              <path d="M3.51 15a9 9 0 1 0 .49-4.5" />
+            </svg>
+            Reset Demo
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ─────────────────────────────────────────────────────────────── -->
+    <!-- ─── APP SHELL JS ─────────────────────────────────────────────── -->
+    <script>
+      // ── MEETING STATE ─────────────────────────────────────────────────────────────
+      window.MeetingState = {
+        _data: {},
+        set(toolId, data) {
+          this._data[toolId] = Object.assign(this._data[toolId] || {}, data);
+          try { localStorage.setItem("fa_meeting_state", JSON.stringify(this._data)); } catch (e) {}
+          document.dispatchEvent(new CustomEvent("meetingstate", { detail: { toolId } }));
+        },
+        get(toolId) { return this._data[toolId] || {}; },
+        getAll() { return { ...this._data }; },
+      };
+      try {
+        const _ms = localStorage.getItem("fa_meeting_state");
+        if (_ms) window.MeetingState._data = JSON.parse(_ms);
+      } catch (e) {}
+
+      // ── SESSION STORE ─────────────────────────────────────────────────────────────
+      function _serializeInputs(container) {
+        const data = {};
+        container.querySelectorAll("input[id], select[id], textarea[id]").forEach((el) => {
+          if (el.type === "checkbox" || el.type === "radio") { data[el.id] = el.checked; }
+          else { data[el.id] = el.value; }
+        });
+        container.querySelectorAll("[data-tog]").forEach((grp) => {
+          const name = grp.dataset.tog;
+          if (name) data[`__tog_${name}`] = grp.querySelector(".cm-toggle-btn.active")?.dataset.val ?? "";
+        });
+        container.querySelectorAll("[data-yn]").forEach((grp) => {
+          const name = grp.dataset.yn;
+          if (name) data[`__yn_${name}`] = grp.querySelector(".cm-yn-btn.active-yes, .cm-yn-btn.active-no")?.dataset.ans ?? "";
+        });
+        return data;
+      }
+
+      function _restoreInputs(container, data) {
+        if (!data) return;
+        Object.entries(data).forEach(([id, value]) => {
+          if (id.startsWith("__tog_")) {
+            const name = id.slice(6);
+            if (value) { const btn = container.querySelector(`[data-tog="${name}"] .cm-toggle-btn[data-val="${value}"]`); if (btn) btn.click(); }
+            return;
+          }
+          if (id.startsWith("__yn_")) {
+            const name = id.slice(5);
+            if (value) { const btn = container.querySelector(`[data-yn="${name}"] .cm-yn-btn[data-ans="${value}"]`); if (btn) btn.click(); }
+            return;
+          }
+          const el = container.querySelector(`#${id}`);
+          if (!el) return;
+          if (el.type === "checkbox" || el.type === "radio") { el.checked = value; }
+          else { el.value = value; }
+        });
+        Object.keys(data).forEach((id) => {
+          if (id.startsWith("__")) return;
+          const el = container.querySelector(`#${id}`);
+          if (!el || el.type === "range") return;
+          el.dispatchEvent(new Event("input", { bubbles: true }));
+          el.dispatchEvent(new Event("change", { bubbles: true }));
+        });
+      }
+
+      window.AppSession = {
+        clearClientData() {
+          Object.keys(localStorage).filter((k) => k.startsWith("fa_tool_") || k === "fa_meeting_state" || k === "fa_active_calc").forEach((k) => localStorage.removeItem(k));
+          if (window.MeetingState) window.MeetingState._data = {};
+        },
+      };
+      window.FASession = window.AppSession;
+
+      window.addEventListener("beforeunload", () => {
+        const wrappers = window.App?._wrappers ?? {};
+        const modules  = window.App?._modules  ?? {};
+        Object.keys(wrappers).forEach((id) => {
+          const wrapper = wrappers[id];
+          const mod     = modules[id];
+          if (!wrapper || !mod || wrapper.children.length === 0) return;
+          try {
+            const inputs = _serializeInputs(wrapper);
+            const extra  = typeof mod.getState === "function" ? mod.getState() : undefined;
+            localStorage.setItem(`fa_tool_${id}`, JSON.stringify({ inputs, extra }));
+          } catch (e) {}
+        });
+        const calcId = window.App?._active?.id ?? "home";
+        if (calcId && calcId !== "home") { localStorage.setItem("fa_active_calc", calcId); }
+        else { localStorage.removeItem("fa_active_calc"); }
+      });
+
+      // ── GUIDE CONTENT ─────────────────────────────────────────────────────────────
+      const HOME_HEADING = "Opening the meeting";
+      const HOME_TEXT = ``;
+
+      const guideBody = document.getElementById("guide-body");
+      const guideHeading = document.getElementById("guide-heading");
+      const guideText = document.getElementById("guide-text");
+      const guideShimmer = document.getElementById("guide-shimmer");
+
+      function _nudgeGuide() {
+        if (isMobile()) return;
+        guideShimmer.classList.remove("shimmer-active");
+        void guideShimmer.offsetWidth;
+        guideShimmer.classList.add("shimmer-active");
+      }
+
+      function _arriveHeading() {
+        guideHeading.classList.remove("guide-arrive");
+        void guideHeading.offsetWidth;
+        guideHeading.classList.add("guide-arrive");
+      }
+
+      function setGuide(heading, html, fade = true) {
+        if (!fade) {
+          _nudgeGuide();
+          guideBody.classList.remove("fading");
+          guideHeading.innerHTML = heading;
+          guideText.innerHTML = html;
+          guideBody.scrollTop = 0;
+          _arriveHeading();
+          return;
+        }
+        _nudgeGuide();
+        guideBody.classList.add("fading");
+        setTimeout(() => {
+          guideHeading.innerHTML = heading;
+          guideText.innerHTML = html;
+          guideBody.scrollTop = 0;
+          guideBody.classList.remove("fading");
+          _arriveHeading();
+        }, 170);
+      }
+
+      function resetGuide() { setGuide(HOME_HEADING, HOME_TEXT); }
+
+      // ── APP ───────────────────────────────────────────────────────────────────────
+      const isMobile = () => window.matchMedia("(max-width: 1000px)").matches;
+
+      window.App = {
+        _active: null,
+        _calcGuide: null,
+        _modules: {},
+        _seenCalcs: new Set(),
+        _wrappers: {},
+        _calcStates: {},
+
+        register(id, module) { this._modules[id] = module; },
+
+        load(id, fallbackHref) {
+          if (this._modules[id]) { this._mountCalc(id); closeAll(); }
+          else { window.location.href = fallbackHref; }
+        },
+
+        _mountCalc(id) {
+          const mod = this._modules[id];
+          if (!mod) return;
+
+          if (this._active) {
+            const cw = this._wrappers[this._active.id];
+            if (cw) {
+              const glass = cw.querySelector(".calc-glass");
+              if (glass) glass.style.display = "none";
+            }
+          }
+
+          const workspace = document.getElementById("workspace");
+          document.getElementById("home-view").style.display = "none";
+          workspace.classList.add("calc-active");
+
+          const link = document.querySelector(`.tool-lnk[data-calc="${id}"]`);
+          const calcTitle = link?.dataset.title || mod.title || id;
+          const tbTitle = document.getElementById("mob-tb-title");
+          if (tbTitle) tbTitle.innerHTML = `<span>${calcTitle}</span>`;
+
+          document.querySelectorAll(".tool-lnk").forEach((l) => l.classList.remove("active"));
+          link?.classList.add("active");
+
+          if (!this._wrappers[id]) {
+            const wrapper = document.createElement("div");
+            wrapper.style.display = "contents";
+            workspace.appendChild(wrapper);
+            this._wrappers[id] = wrapper;
+          }
+          const wrapper = this._wrappers[id];
+
+          if (wrapper.children.length === 0) {
+            mod.mount(wrapper);
+            this._calcStates[id] = window.CalcState;
+            try {
+              const stored = localStorage.getItem(`fa_tool_${id}`);
+              if (stored) {
+                const saved = JSON.parse(stored);
+                if (saved.inputs) _restoreInputs(wrapper, saved.inputs);
+                if (saved.extra != null && typeof mod.setState === "function") mod.setState(saved.extra);
+              }
+            } catch (e) {}
+          } else {
+            window.CalcState = this._calcStates[id];
+            const glass = wrapper.querySelector(".calc-glass");
+            if (glass) glass.style.display = "";
+          }
+
+          this._active = mod;
+
+          if (mod.guide?.intro) {
+            this._calcGuide = mod.guide.intro;
+            setGuide(mod.guide.intro.heading, mod.guide.intro.html, false);
+          }
+
+          if (isMobile() && !this._seenCalcs.has(id)) {
+            this._seenCalcs.add(id);
+            openPanel(rtPanel);
+          }
+        },
+
+        goHome() {
+          if (this._active) {
+            const cw = this._wrappers[this._active.id];
+            if (cw) {
+              const glass = cw.querySelector(".calc-glass");
+              if (glass) glass.style.display = "none";
+            }
+            this._active = null;
+          }
+          this._calcGuide = null;
+          this._mountCalc("meeting-intro");
+        },
+
+        setGuide(heading, html, openOnMobile = true) {
+          setGuide(heading, html);
+          if (openOnMobile && isMobile()) openPanel(rtPanel);
+        },
+
+        revertGuide() {
+          if (this._calcGuide) { setGuide(this._calcGuide.heading, this._calcGuide.html); }
+          else { resetGuide(); }
+        },
+
+        _preloadCalc(id) {
+          const mod = this._modules[id];
+          if (!mod) return;
+          if (this._wrappers[id]?.children.length > 0) return;
+
+          const workspace = document.getElementById("workspace");
+          if (!this._wrappers[id]) {
+            const wrapper = document.createElement("div");
+            wrapper.style.display = "contents";
+            workspace.appendChild(wrapper);
+            this._wrappers[id] = wrapper;
+          }
+          const wrapper = this._wrappers[id];
+          mod.mount(wrapper);
+          this._calcStates[id] = window.CalcState;
+
+          try {
+            const stored = localStorage.getItem(`fa_tool_${id}`);
+            if (stored) {
+              const saved = JSON.parse(stored);
+              if (saved.inputs) _restoreInputs(wrapper, saved.inputs);
+              if (saved.extra != null && typeof mod.setState === "function") mod.setState(saved.extra);
+            }
+          } catch (e) {}
+
+          wrapper.querySelectorAll(".iz-viewport.iz-snap").forEach((vp) => {
+            const firstPage = vp.querySelector(":scope > .iz-page");
+            if (!firstPage) return;
+            const h = firstPage.getBoundingClientRect().height;
+            if (h > 0) { vp.style.height = h + "px"; vp.scrollTop = 0; }
+          });
+
+          const glass = wrapper.querySelector(".calc-glass");
+          if (glass) glass.style.display = "none";
+        },
+      };
+
+      document.getElementById("home-link").addEventListener("click", (e) => {
+        e.preventDefault();
+        App.load("meeting-intro", "/tools/meeting-tools/meeting-intro.js");
+        closeAll();
+      });
+
+      document.getElementById("guide-profile-header").addEventListener("click", () => App.revertGuide());
+
+      document.querySelectorAll(".tool-lnk[data-calc]").forEach((link) => {
+        link.addEventListener("click", (e) => {
+          e.preventDefault();
+          App.load(link.dataset.calc, link.dataset.href);
+        });
+      });
+
+      // ── RESET BUTTON ──────────────────────────────────────────────────────────────
+      document.getElementById("demo-reset-btn").addEventListener("click", () => {
+        sessionStorage.setItem("fa_reset", "1");
+        location.reload();
+      });
+
+      // ── MOBILE DRAWER ─────────────────────────────────────────────────────────────
+      const lfPanel = document.getElementById("lf-panel");
+      const rtPanel = document.getElementById("guide-panel");
+      const backdrop = document.getElementById("drawer-backdrop");
+      function openPanel(panel) {
+        panel.classList.add("open");
+        backdrop.style.opacity = "1";
+        backdrop.style.pointerEvents = "auto";
+        document.getElementById("hint-left").style.display = "none";
+        document.getElementById("hint-right").style.display = "none";
+      }
+
+      function closeAll() {
+        [lfPanel, rtPanel].forEach((p) => { p.style.transition = ""; p.style.transform = ""; p.classList.remove("open"); });
+        backdrop.style.opacity = "0";
+        backdrop.style.pointerEvents = "none";
+      }
+
+      backdrop.addEventListener("click", closeAll);
+
+      // ── App Drawers ───────────────────────────────────────────────────────────────
+      function _closeDrawers() {
+        document.querySelectorAll(".app-drawer").forEach((d) => d.classList.remove("open"));
+        document.querySelectorAll(".app-drawer-trigger").forEach((t) => t.classList.remove("open"));
+        document.querySelectorAll(".glass-panel").forEach((p) => p.classList.remove("drawer-open"));
+      }
+
+      [
+        ["lf-drawer-trigger", "lf-drawer", "lf-panel"],
+        ["rt-drawer-trigger", "rt-drawer", "guide-panel"],
+      ].forEach(([tid, did, pid]) => {
+        const trigger = document.getElementById(tid);
+        const drawer = document.getElementById(did);
+        const panel = document.getElementById(pid);
+        if (!trigger || !drawer) return;
+        trigger.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const isOpen = drawer.classList.contains("open");
+          _closeDrawers();
+          if (!isOpen) { drawer.classList.add("open"); trigger.classList.add("open"); panel?.classList.add("drawer-open"); }
+        });
+        drawer.querySelectorAll(".tool-lnk").forEach((link) => link.addEventListener("click", _closeDrawers));
+      });
+
+      document.addEventListener("click", (e) => {
+        if (!e.target.closest(".app-drawer") && !e.target.closest(".app-drawer-trigger")) _closeDrawers();
+      });
+
+      document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeAll(); });
+    </script>
+
+    <!-- ─── SHARED CALC DEPENDENCIES ── -->
+    <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+    <script defer src="/resources/constants.js"></script>
+    <script defer src="/components/simulation-engine.js"></script>
+    <script defer src="/components/chart.js"></script>
+    <script defer src="/components/tool-hero.js"></script>
+    <script defer src="/components/input-format.js"></script>
+    <script defer src="/components/donut-chart.js"></script>
+    <script defer src="/components/tool-input.js"></script>
+    <script defer src="/components/tool-nav.js"></script>
+    <script defer src="/components/mobile-menu.js"></script>
+
+    <script defer src="/tools/meeting-tools/meeting-shared.js"></script>
+    <script defer src="/tools/meeting-tools/meeting-intro.js"></script>
+    <script defer src="/tools/meeting-tools/timeline.js"></script>
+    <script defer src="/tools/meeting-tools/existing-portfolio.js"></script>
+    <script defer src="/tools/meeting-tools/existing-policies.js"></script>
+    <script defer src="/tools/meeting-tools/cashflow.js"></script>
+<script defer src="/tools/meeting-tools/wrapping-up.js"></script>
+    <script defer src="/tools/fa-tools/meeting-summary.js"></script>
+    <script defer src="/tools/fa-tools/record-of-advice.js"></script>
+    <script defer src="/tools/meeting-tools/cover-planning.js"></script>
+    <script defer src="/tools/meeting-tools/investment-planning.js"></script>
+    <script defer src="/tools/standalone/life-cover-calculator.js"></script>
+    <script defer src="/tools/standalone/retirement-calculator.js"></script>
+    <script defer src="/tools/standalone/post-retirement-calculator.js"></script>
+    <script defer src="/tools/standalone/investment-calculator.js"></script>
+    <script defer src="/tools/standalone/tfsa-calculator.js"></script>
+    <script defer src="/tools/standalone/tax-calculator.js"></script>
+    <script defer src="/tools/standalone/loan-calculator.js"></script>
+    <script defer src="/tools/standalone/education-calculator.js"></script>
+    <script defer src="/tools/meeting-tools/estate-planning.js"></script>
+
+    <script>
+      window.MEETING_TOOLS = ["meeting-intro", "existing-portfolio", "existing-policies", "budget", "estate-planner", "life-cover", "wrap-up"];
+      const MEETING_TOOLS = window.MEETING_TOOLS;
+
+      document.addEventListener("DOMContentLoaded", () => {
+        // Handle reset (clears all data and starts fresh)
+        if (sessionStorage.getItem("fa_reset")) {
+          sessionStorage.removeItem("fa_reset");
+          window.AppSession.clearClientData();
+          window.App._mountCalc("meeting-intro");
+          return;
+        }
+
+        // Restore last active tool or default to meeting-intro
+        const lastCalc = localStorage.getItem("fa_active_calc");
+        const activeId = lastCalc && window.App._modules[lastCalc] ? lastCalc : "meeting-intro";
+        window.App._mountCalc(activeId);
+
+        setTimeout(() => {
+          MEETING_TOOLS.forEach((id) => {
+            if (id !== activeId && window.App._modules[id] && localStorage.getItem(`fa_tool_${id}`)) {
+              window.App._preloadCalc(id);
+            }
+          });
+        }, 0);
+      });
+    </script>
+
+    <script>
+      // ── Demo: editable advisor name + photo ───────────────────────────────────────
+      (function () {
+        const wrap        = document.getElementById('guide-avatar-wrap');
+        const svgHolder   = document.getElementById('guide-avatar-placeholder');
+        const img         = document.getElementById('guide-avatar');
+        const upload      = document.getElementById('guide-avatar-upload');
+        const nameEl      = document.getElementById('guide-id-name');
+
+        function _setAdviserName(name) {
+          if (!window.ACTIVE_ADVISER) window.ACTIVE_ADVISER = {};
+          window.ACTIVE_ADVISER.name = name;
+        }
+
+        // Restore from localStorage
+        const savedName  = localStorage.getItem('demo_advisor_name');
+        const savedPhoto = localStorage.getItem('demo_advisor_photo');
+        if (savedName) { nameEl.textContent = savedName; _setAdviserName(savedName); }
+        if (savedPhoto) {
+          img.src = savedPhoto;
+          img.style.display = '';
+          svgHolder.style.display = 'none';
+          if (!window.ACTIVE_ADVISER) window.ACTIVE_ADVISER = {};
+          window.ACTIVE_ADVISER.img = savedPhoto;
+        }
+
+        // Avatar click → file picker
+        wrap.addEventListener('click', (e) => { e.stopPropagation(); upload.click(); });
+        upload.addEventListener('change', () => {
+          const file = upload.files[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            const dataUrl = ev.target.result;
+            img.src = dataUrl;
+            img.style.display = '';
+            svgHolder.style.display = 'none';
+            if (!window.ACTIVE_ADVISER) window.ACTIVE_ADVISER = {};
+            window.ACTIVE_ADVISER.img = dataUrl;
+            try { localStorage.setItem('demo_advisor_photo', dataUrl); } catch (_) {}
+          };
+          reader.readAsDataURL(file);
+        });
+
+        // Name editing — stop propagation so it doesn't trigger guide revert
+        nameEl.addEventListener('click', (e) => e.stopPropagation());
+        nameEl.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === 'Escape') { e.preventDefault(); nameEl.blur(); }
+        });
+        nameEl.addEventListener('blur', () => {
+          const name = nameEl.textContent.trim();
+          _setAdviserName(name);
+          try { localStorage.setItem('demo_advisor_name', name); } catch (_) {}
+        });
+      })();
+    </script>
+
+  </body>
+</html>

@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Sign In — Financial Tools</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+  <link rel="icon" type="image/svg+xml" href="resources/favicon.svg" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy:   #0a0f1e;
+      --navy-2: #0f172a;
+      --navy-3: #1e293b;
+      --navy-4: #334155;
+      --gold:   #d4a843;
+      --white:  #f1f5f9;
+      --muted:  #94a3b8;
+      --dim:    #64748b;
+      --fd: "Playfair Display", Georgia, serif;
+      --fb: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: #e2e3e4;
+      min-height: 100dvh;
+      font-family: var(--fb);
+      -webkit-font-smoothing: antialiased;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .card {
+      background: #0b1221;
+      border-radius: 1.25rem;
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: 0 25px 50px -12px rgba(11,18,33,0.5), inset 0 2px 2px rgba(255,255,255,0.08);
+      padding: 2.5rem 2rem;
+      width: 100%;
+      max-width: 420px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.75rem;
+    }
+
+    .header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+      text-align: center;
+    }
+
+    .logo-mark {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .logo-mark img { width: 22px; height: 22px; }
+
+    .logo-mark h1 {
+      font-family: var(--fd);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--white);
+      line-height: 1;
+    }
+
+    .logo-mark h1 span { color: var(--gold); }
+
+    .header p {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    input {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 0.6rem;
+      color: var(--white);
+      font-family: var(--fb);
+      font-size: 0.95rem;
+      padding: 0.7rem 0.9rem;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    input:focus { border-color: rgba(212,168,67,0.5); }
+    input::placeholder { color: var(--dim); }
+
+    .btn {
+      background: var(--gold);
+      border: none;
+      border-radius: 0.6rem;
+      color: var(--navy);
+      cursor: pointer;
+      font-family: var(--fb);
+      font-size: 0.95rem;
+      font-weight: 700;
+      padding: 0.8rem;
+      margin-top: 0.25rem;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+
+    .btn:hover { opacity: 0.9; }
+    .btn:active { transform: scale(0.98); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .error {
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.3);
+      border-radius: 0.6rem;
+      color: #fca5a5;
+      font-size: 0.85rem;
+      padding: 0.65rem 0.9rem;
+      display: none;
+    }
+
+    .error.visible { display: block; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="header">
+      <div class="logo-mark">
+        <img src="resources/logo.svg" alt="" />
+        <h1>The <span>Steward</span></h1>
+      </div>
+      <p>Sign in to your advisor dashboard</p>
+    </div>
+
+    <div class="form">
+      <div class="field">
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="you@example.com" autocomplete="email" />
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="••••••••" autocomplete="current-password" />
+      </div>
+      <div class="error" id="error-msg"></div>
+      <button class="btn" id="sign-in-btn" onclick="signIn()">Sign In</button>
+    </div>
+  </div>
+
+  <script type="module">
+    import { supabase } from "./resources/supabase.js";
+
+    // Redirect if already logged in
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) location.href = "./financial-tools.html";
+
+    window.signIn = async function () {
+      const email    = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      const btn      = document.getElementById("sign-in-btn");
+      const errEl    = document.getElementById("error-msg");
+
+      errEl.classList.remove("visible");
+      btn.disabled = true;
+      btn.textContent = "Signing in…";
+
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+      if (error) {
+        errEl.textContent = error.message;
+        errEl.classList.add("visible");
+        btn.disabled = false;
+        btn.textContent = "Sign In";
+      } else {
+        location.href = "./financial-tools.html";
+      }
+    };
+
+    // Allow Enter key to submit
+    document.addEventListener("keydown", e => {
+      if (e.key === "Enter") window.signIn();
+    });
+  </script>
+</body>
+</html>
