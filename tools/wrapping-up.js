@@ -1,4 +1,4 @@
-// tools/wrap-up.js
+// tools/wrapping-up.js
 // Wrapping Up — will questions, service rating, and referrals table.
 
 (function () {
@@ -213,8 +213,8 @@
 
   // ── Module ─────────────────────────────────────────────────────────────────
 
-  window.App?.register("wrap-up", {
-    id: "wrap-up",
+  window.App?.register("wrapping-up", {
+    id: "wrapping-up",
     title: "Wrap Up",
     guide: {
       intro: {

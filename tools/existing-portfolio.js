@@ -1,4 +1,4 @@
-// tools/meeting-tools/existing-portfolio.js
+// tools/existing-portfolio.js
 // Balance sheet: Liquid Assets · Investments · Fixed Assets · Liabilities
 
 (function () {

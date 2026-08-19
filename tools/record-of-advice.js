@@ -1,4 +1,4 @@
-// tools/fa-tools/roa.js
+// tools/record-of-advice.js
 // Record of Advice - 8-section narrative form for the compliance file.
 // Reads client name/date from MeetingState or falls back to DOM IDs in other tools.
 // Section styles are scoped under .roa-pane to avoid conflicts with other tools
@@ -362,7 +362,7 @@
     const tl  = ms.get("timeline");
     const cp  = ms.get("currentPortfolio");
     const ep  = ms.get("existingPolicies");
-    const bud = ms.get("budget");
+    const bud = ms.get("cashflow");
     const cn  = ms.get("coverNeeds");
     const wu  = ms.get("wrapUp");
     const cd  = ms.get("clientDetails");
@@ -759,8 +759,8 @@
 
   // ── Module ─────────────────────────────────────────────────────────────────
 
-  window.App?.register("roa", {
-    id: "roa",
+  window.App?.register("record-of-advice", {
+    id: "record-of-advice",
     title: "Record of Advice",
     guide: {
       intro: {

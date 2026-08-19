@@ -18,7 +18,7 @@
 
     <link rel="icon" type="image/svg+xml" href="resources/favicon.svg" />
     <link rel="stylesheet" href="style.css" />
-    <link rel="stylesheet" href="tools/meeting-tools/meeting-shared.css" />
+    <link rel="stylesheet" href="tools/meeting-shared.css" />
 
     <style>
       .nav-tabs {
@@ -165,7 +165,7 @@
           <a
             class="tool-lnk"
             data-calc="meeting-intro"
-            data-href="tools/meeting-tools/meeting-intro.js"
+            data-href="tools/meeting-intro.js"
             data-title="Meeting Intro"
             data-desc="A 7-slide presentation to open a client meeting - welcome, agenda, advisor intro, life considerations, goals, building blocks, and FAIS handoff.">
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
@@ -179,7 +179,7 @@
           <a
             class="tool-lnk"
             data-calc="timeline"
-            data-href="tools/meeting-tools/timeline.js"
+            data-href="tools/timeline.js"
             data-title="Timeline"
             data-desc="A chronological feed of the client's life — personal milestones on one side, financial planning items on the other.">
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
@@ -195,7 +195,7 @@
           <a
             class="tool-lnk"
             data-calc="existing-portfolio"
-            data-href="tools/meeting-tools/existing-portfolio.js"
+            data-href="tools/existing-portfolio.js"
             data-title="Existing Portfolio"
             data-desc="Capture the client's investments, assets, and liabilities to understand their current financial position.">
             <span class="tool-step">1</span>
@@ -205,7 +205,7 @@
           <a
             class="tool-lnk"
             data-calc="existing-policies"
-            data-href="tools/meeting-tools/existing-policies.js"
+            data-href="tools/existing-policies.js"
             data-title="Existing Policies"
             data-desc="Capture the client's current risk cover — life, disability, income protection, dread disease, funeral, and other policies.">
             <span class="tool-step">2</span>
@@ -214,8 +214,8 @@
 
           <a
             class="tool-lnk"
-            data-calc="budget"
-            data-href="tools/meeting-tools/cashflow.js"
+            data-calc="cashflow"
+            data-href="tools/cashflow.js"
             data-title="Cashflow"
             data-desc="Map every rand to a purpose. Enter your income, work through ten spending categories, and see your surplus - or deficit - in real time.">
             <span class="tool-step">3</span>
@@ -226,8 +226,8 @@
 
           <a
             class="tool-lnk"
-            data-calc="estate-planner"
-            data-href="tools/meeting-tools/estate-planning.js"
+            data-calc="estate-planning"
+            data-href="tools/estate-planning.js"
             data-title="Estate Planning"
             data-desc="Map your estate, calculate executor fees, estate duty, and CGT on death — the liquidity gap feeds directly into life cover needs.">
             <span class="tool-step">1</span>
@@ -237,7 +237,7 @@
           <a
             class="tool-lnk"
             data-calc="financial-planning"
-            data-href="tools/meeting-tools/financial-planning.js"
+            data-href="tools/financial-planning.js"
             data-title="Financial Planning"
             data-desc="Select what each cover pillar protects — estate gap, income replacement, education, and liabilities all pull through from the steps above.">
             <span class="tool-step">2</span>
@@ -248,8 +248,8 @@
 
           <a
             class="tool-lnk"
-            data-calc="wrap-up"
-            data-href="tools/meeting-tools/wrapping-up.js"
+            data-calc="wrapping-up"
+            data-href="tools/wrapping-up.js"
             data-title="Wrap Up"
             data-desc="Capture will status, service rating, and referrals to close the meeting.">
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
@@ -318,7 +318,7 @@
           <a
             class="tool-lnk"
             data-calc="meeting-summary"
-            data-href="tools/fa-tools/meeting-summary.js"
+            data-href="tools/meeting-summary.js"
             data-title="Meeting Summary"
             data-desc="Post-meeting notes - proposed solutions, observations, next steps, and a formatted summary email.">
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
@@ -329,8 +329,8 @@
 
           <a
             class="tool-lnk"
-            data-calc="roa"
-            data-href="tools/fa-tools/record-of-advice.js"
+            data-calc="record-of-advice"
+            data-href="tools/record-of-advice.js"
             data-title="Record of Advice"
             data-desc="8-section narrative RoA for your compliance file. Copy to clipboard when done.">
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
@@ -636,7 +636,7 @@
 
       document.getElementById("home-link").addEventListener("click", (e) => {
         e.preventDefault();
-        App.load("meeting-intro", "tools/meeting-tools/meeting-intro.js");
+        App.load("meeting-intro", "tools/meeting-intro.js");
         closeAll();
       });
 
@@ -706,7 +706,7 @@
     <!-- ─── SHARED DEPENDENCIES ── -->
     <!-- Chart.js CDN, components/simulation-engine.js, chart.js, donut-chart.js,
          tool-input.js, tool-nav.js, and mobile-menu.js are NOT loaded here — audited
-         and confirmed unused by anything in tools/meeting-tools/ or tools/fa-tools/
+         and confirmed unused by anything in tools/ or tools/
          (their only consumers were the standalone calculators, which no longer live
          in this repo — see the implementation plan, "Separate Financial Tools into
          its own repo"). Only components/input-format.js (moneyToNumber/numToRand/
@@ -717,17 +717,17 @@
     <script defer src="components/tool-hero.js"></script>
     <script defer src="components/input-format.js"></script>
 
-    <script defer src="tools/meeting-tools/meeting-shared.js"></script>
-    <script defer src="tools/meeting-tools/meeting-intro.js"></script>
-    <script defer src="tools/meeting-tools/timeline.js"></script>
-    <script defer src="tools/meeting-tools/existing-portfolio.js"></script>
-    <script defer src="tools/meeting-tools/existing-policies.js"></script>
-    <script defer src="tools/meeting-tools/cashflow.js"></script>
-    <script defer src="tools/meeting-tools/wrapping-up.js"></script>
-    <script defer src="tools/fa-tools/meeting-summary.js"></script>
-    <script defer src="tools/fa-tools/record-of-advice.js"></script>
-    <script defer src="tools/meeting-tools/financial-planning.js"></script>
-    <script defer src="tools/meeting-tools/estate-planning.js"></script>
+    <script defer src="tools/meeting-shared.js"></script>
+    <script defer src="tools/meeting-intro.js"></script>
+    <script defer src="tools/timeline.js"></script>
+    <script defer src="tools/existing-portfolio.js"></script>
+    <script defer src="tools/existing-policies.js"></script>
+    <script defer src="tools/cashflow.js"></script>
+    <script defer src="tools/wrapping-up.js"></script>
+    <script defer src="tools/meeting-summary.js"></script>
+    <script defer src="tools/record-of-advice.js"></script>
+    <script defer src="tools/financial-planning.js"></script>
+    <script defer src="tools/estate-planning.js"></script>
 
     <!-- ─── STEWARD CALCULATORS (embedded, not local modules) ──────────────────
          The Steward remains the one canonical calculator source. Instead of loading
@@ -787,7 +787,7 @@
     </script>
 
     <script>
-      window.MEETING_TOOLS = ["meeting-intro", "timeline", "existing-portfolio", "existing-policies", "budget", "estate-planner", "financial-planning", "wrap-up"];
+      window.MEETING_TOOLS = ["meeting-intro", "timeline", "existing-portfolio", "existing-policies", "cashflow", "estate-planning", "financial-planning", "wrapping-up"];
       const MEETING_TOOLS = window.MEETING_TOOLS;
 
       document.addEventListener("DOMContentLoaded", async () => {
@@ -841,6 +841,23 @@
 
   <script type="module">
     import { supabase } from "./resources/supabase.js";
+
+    // ── One-time migration for tool ids renamed to match their filenames ─────
+    // (budget→cashflow, estate-planner→estate-planning, wrap-up→wrapping-up,
+    // roa→record-of-advice). Clients saved before this rename have their tool
+    // data keyed under the old ids in Supabase — remap it forward so it still
+    // restores. Safe to delete once no session_json rows carry the old keys.
+    const _LEGACY_TOOL_ID_MAP = { budget: "cashflow", "estate-planner": "estate-planning", "wrap-up": "wrapping-up", roa: "record-of-advice" };
+    function _migrateLegacyToolKeys(obj) {
+      if (!obj) return obj;
+      Object.entries(_LEGACY_TOOL_ID_MAP).forEach(([oldId, newId]) => {
+        if (obj[oldId] !== undefined && obj[newId] === undefined) {
+          obj[newId] = obj[oldId];
+          delete obj[oldId];
+        }
+      });
+      return obj;
+    }
 
     function _seedToolsFromQuestionnaire(q) {
       const existingPortfolio = window._pendingToolStates["existing-portfolio"]?.extra;
@@ -964,10 +981,10 @@
           console.log("[steward] session_json keys:", Object.keys(payload));
           console.log("[steward] questionnaire payload:", payload.questionnaire);
           if (payload.meetingState && window.MeetingState) {
-            window.MeetingState._data = payload.meetingState;
+            window.MeetingState._data = _migrateLegacyToolKeys(payload.meetingState);
           }
           if (payload.tools) {
-            window._pendingToolStates = payload.tools;
+            window._pendingToolStates = _migrateLegacyToolKeys(payload.tools);
           }
           if (payload.questionnaire) {
             _seedToolsFromQuestionnaire(payload.questionnaire);

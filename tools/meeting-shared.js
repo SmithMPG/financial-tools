@@ -1,4 +1,4 @@
-// tools/meeting-tools/meeting-shared.js
+// tools/meeting-shared.js
 // Shared utilities for all meeting-tool panels.
 // Must load before any meeting tool script.
 

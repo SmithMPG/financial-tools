@@ -31,16 +31,15 @@ canonical source. Instead:
 
 ## What actually needed to move here (audited, not assumed)
 
-Besides the platform HTML/`tools/meeting-tools/`/`tools/fa-tools/` files
-themselves:
+Besides the platform HTML/`tools/` files themselves:
 - `resources/supabase.js`, `resources/constants.js` — real dependencies of
   `meeting-dashboard.html` and the meeting-tools panels.
 - `components/input-format.js` (`moneyToNumber`/`numToRand`/`numberToMoney`) —
-  used throughout `tools/meeting-tools/*` and `meeting-summary.js`.
+  used throughout `tools/*` and `meeting-summary.js`.
 - `components/tool-hero.js` (`CalcHero`) — used by `existing-portfolio.js`,
   `existing-policies.js`, `cashflow.js`, `estate-planning.js`,
   `financial-planning.js`.
-- `style.css`, `tools/meeting-tools/meeting-shared.css`.
+- `style.css`, `tools/meeting-shared.css`.
 
 Confirmed **not** needed (their only consumers were the standalone
 calculators, which don't live here anymore): Chart.js CDN,

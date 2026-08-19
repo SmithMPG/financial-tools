@@ -18,7 +18,7 @@
 
     <link rel="icon" type="image/svg+xml" href="/resources/favicon.svg" />
     <link rel="stylesheet" href="/style.css" />
-    <link rel="stylesheet" href="/tools/meeting-tools/meeting-shared.css" />
+    <link rel="stylesheet" href="/tools/meeting-shared.css" />
 
     <style>
       .nav-tabs {
@@ -204,7 +204,7 @@
           <a
             class="tool-lnk"
             data-calc="meeting-intro"
-            data-href="/tools/meeting-tools/meeting-intro.js"
+            data-href="/tools/meeting-intro.js"
             data-title="Meeting Intro"
             data-desc="A 7-slide presentation to open a client meeting - welcome, agenda, advisor intro, life considerations, goals, building blocks, and FAIS handoff.">
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
@@ -218,7 +218,7 @@
           <a
             class="tool-lnk"
             data-calc="timeline"
-            data-href="/tools/meeting-tools/timeline.js"
+            data-href="/tools/timeline.js"
             data-title="Timeline"
             data-desc="A chronological feed of the client's life — personal milestones on one side, financial planning items on the other.">
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
@@ -234,7 +234,7 @@
           <a
             class="tool-lnk"
             data-calc="existing-portfolio"
-            data-href="/tools/meeting-tools/existing-portfolio.js"
+            data-href="/tools/existing-portfolio.js"
             data-title="Existing Portfolio"
             data-desc="Capture the client's investments, assets, and liabilities to understand their current financial position.">
             <span class="tool-step">1</span>
@@ -244,7 +244,7 @@
           <a
             class="tool-lnk"
             data-calc="existing-policies"
-            data-href="/tools/meeting-tools/existing-policies.js"
+            data-href="/tools/existing-policies.js"
             data-title="Existing Policies"
             data-desc="Capture the client's current risk cover — life, disability, income protection, dread disease, funeral, and other policies.">
             <span class="tool-step">2</span>
@@ -253,8 +253,8 @@
 
           <a
             class="tool-lnk"
-            data-calc="budget"
-            data-href="/tools/meeting-tools/cashflow.js"
+            data-calc="cashflow"
+            data-href="/tools/cashflow.js"
             data-title="Cashflow"
             data-desc="Map every rand to a purpose. Enter your income, work through ten spending categories, and see your surplus - or deficit - in real time.">
             <span class="tool-step">3</span>
@@ -265,8 +265,8 @@
 
           <a
             class="tool-lnk"
-            data-calc="estate-planner"
-            data-href="/tools/meeting-tools/estate-planning.js"
+            data-calc="estate-planning"
+            data-href="/tools/estate-planning.js"
             data-title="Estate Planning"
             data-desc="Map your estate, calculate executor fees, estate duty, and CGT on death — the liquidity gap feeds directly into life cover needs.">
             <span class="tool-step">1</span>
@@ -275,30 +275,20 @@
 
           <a
             class="tool-lnk"
-            data-calc="life-cover"
-            data-href="/tools/meeting-tools/cover-planning.js"
-            data-title="Cover Planning"
+            data-calc="financial-planning"
+            data-href="/tools/financial-planning.js"
+            data-title="Financial Planning"
             data-desc="Select what each cover pillar protects — estate gap, income replacement, education, and liabilities all pull through from the steps above.">
             <span class="tool-step">2</span>
-            Cover Planning
-          </a>
-
-          <a
-            class="tool-lnk"
-            data-calc="investment-goals"
-            data-href="/tools/meeting-tools/investment-planning.js"
-            data-title="Investment Planning"
-            data-desc="Capture each investment goal — the description, wrapper, and lump sum needed.">
-            <span class="tool-step">3</span>
-            Investment Planning
+            Financial Planning
           </a>
 
           <div class="grp-label">Your Plan</div>
 
           <a
             class="tool-lnk"
-            data-calc="wrap-up"
-            data-href="/tools/meeting-tools/wrapping-up.js"
+            data-calc="wrapping-up"
+            data-href="/tools/wrapping-up.js"
             data-title="Wrapping Up"
             data-desc="Capture will status, service rating, and referrals to close the meeting.">
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
@@ -323,118 +313,7 @@
         </button>
 
         <div class="app-drawer" id="lf-drawer">
-          <div class="grp-label">Build Wealth</div>
-
-          <a
-            class="tool-lnk"
-            data-calc="investment"
-            data-href="/tools/standalone/investment-calculator.js"
-            data-title="Investment Calculator"
-            data-desc="Project how your lump sum or monthly contributions grow over time, and see exactly how much fees are quietly costing you.">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
-              <polyline points="17 6 23 6 23 12" />
-            </svg>
-            Investment Calculator
-          </a>
-
-          <a
-            class="tool-lnk"
-            data-calc="tfsa"
-            data-href="/tools/standalone/tfsa-calculator.js"
-            data-title="TFSA Calculator"
-            data-desc="Project your Tax-Free Savings Account growth over time and track how close you are to the R500,000 lifetime contribution cap.">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10" />
-              <path d="M12 8v8M8 12h8" />
-            </svg>
-            TFSA Calculator
-          </a>
-
-          <a
-            class="tool-lnk"
-            data-calc="retirement"
-            data-href="/tools/standalone/retirement-calculator.js"
-            data-title="Retirement Calculator"
-            data-desc="Work backwards from your retirement income goal to exactly what you need to save today. See the gap - then see how to close it.">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-            </svg>
-            Retirement Calculator
-          </a>
-
-          <a
-            class="tool-lnk"
-            data-calc="post-retirement"
-            data-href="/tools/standalone/post-retirement-calculator.js"
-            data-title="Post-Retirement Calculator"
-            data-desc="Model your retirement income from a lump sum. See what you'll draw each year, how long your capital lasts, and how a life annuity compares.">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"/>
-              <polyline points="12 6 12 12 16 14"/>
-            </svg>
-            Post-Retirement Calculator
-          </a>
-
-          <div class="grp-label">Manage Debt</div>
-
-          <a
-            class="tool-lnk"
-            data-calc="loan"
-            data-href="/tools/standalone/loan-calculator.js"
-            data-title="Loan Calculator"
-            data-desc="Calculate your repayments, total interest, and discover how much time and money a small extra payment each month can save you.">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="12" y1="1" x2="12" y2="23" />
-              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-            </svg>
-            Loan Calculator
-          </a>
-
-          <div class="grp-label">Protect</div>
-
-          <a
-            class="tool-lnk"
-            data-calc="life-cover-calc"
-            data-href="/tools/standalone/life-cover-calculator.js"
-            data-title="Life Cover Calculator"
-            data-desc="Work out exactly how much life cover you need — immediate costs, income replacement for each dependant, and all debts that need to be settled at death.">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-            </svg>
-            Life Cover Calculator
-          </a>
-
-          <div class="grp-label">Plan</div>
-
-          <a
-            class="tool-lnk"
-            data-calc="tax"
-            data-href="/tools/standalone/tax-calculator.js"
-            data-title="Tax & Rebate Calculator"
-            data-desc="See what SARS takes, what your age rebate and medical credits claw back, and how retirement contributions reduce your taxable income. Based on the 2026/27 tax tables.">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-              <polyline points="14 2 14 8 20 8" />
-              <line x1="16" y1="13" x2="8" y2="13" />
-              <line x1="16" y1="17" x2="8" y2="17" />
-            </svg>
-            Tax Calculator
-          </a>
-
-          <a
-            class="tool-lnk"
-            data-calc="education"
-            data-href="/tools/standalone/education-calculator.js"
-            data-title="University Calculator"
-            data-desc="Project the full cost of a university education - tuition, accommodation, and living costs - adjusted for education inflation. Know the number before the bill arrives.">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-              <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
-            </svg>
-            University Calculator
-          </a>
-
+          <div id="nav-tools-mount"></div>
         </div>
       </div>
     </nav>
@@ -491,7 +370,7 @@
           <a
             class="tool-lnk"
             data-calc="meeting-summary"
-            data-href="/tools/fa-tools/meeting-summary.js"
+            data-href="/tools/meeting-summary.js"
             data-title="Meeting Summary"
             data-desc="Post-meeting notes - proposed solutions, observations, next steps, and a formatted summary email.">
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
@@ -502,8 +381,8 @@
 
           <a
             class="tool-lnk"
-            data-calc="roa"
-            data-href="/tools/fa-tools/record-of-advice.js"
+            data-calc="record-of-advice"
+            data-href="/tools/record-of-advice.js"
             data-title="Record of Advice"
             data-desc="8-section narrative RoA for your compliance file. Copy to clipboard when done.">
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
@@ -530,6 +409,36 @@
     <!-- ─────────────────────────────────────────────────────────────── -->
     <!-- ─── APP SHELL JS ─────────────────────────────────────────────── -->
     <script>
+      // ── One-time migration for tool ids renamed to match their filenames ─────
+      // (budget→cashflow, estate-planner→estate-planning, wrap-up→wrapping-up,
+      // roa→record-of-advice). Visitors who filled in the demo before this rename
+      // have their saved localStorage keyed under the old ids — remap it forward
+      // so their trial data still restores. Safe to delete once stale enough.
+      const _LEGACY_TOOL_ID_MAP = { budget: "cashflow", "estate-planner": "estate-planning", "wrap-up": "wrapping-up", roa: "record-of-advice" };
+      function _migrateLegacyToolKeys(obj) {
+        if (!obj) return obj;
+        Object.entries(_LEGACY_TOOL_ID_MAP).forEach(([oldId, newId]) => {
+          if (obj[oldId] !== undefined && obj[newId] === undefined) {
+            obj[newId] = obj[oldId];
+            delete obj[oldId];
+          }
+        });
+        return obj;
+      }
+      try {
+        Object.entries(_LEGACY_TOOL_ID_MAP).forEach(([oldId, newId]) => {
+          const stored = localStorage.getItem(`fa_tool_${oldId}`);
+          if (stored && !localStorage.getItem(`fa_tool_${newId}`)) {
+            localStorage.setItem(`fa_tool_${newId}`, stored);
+          }
+          if (stored) localStorage.removeItem(`fa_tool_${oldId}`);
+        });
+        const _lastCalc = localStorage.getItem("fa_active_calc");
+        if (_lastCalc && _LEGACY_TOOL_ID_MAP[_lastCalc]) {
+          localStorage.setItem("fa_active_calc", _LEGACY_TOOL_ID_MAP[_lastCalc]);
+        }
+      } catch (e) {}
+
       // ── MEETING STATE ─────────────────────────────────────────────────────────────
       window.MeetingState = {
         _data: {},
@@ -543,7 +452,7 @@
       };
       try {
         const _ms = localStorage.getItem("fa_meeting_state");
-        if (_ms) window.MeetingState._data = JSON.parse(_ms);
+        if (_ms) window.MeetingState._data = _migrateLegacyToolKeys(JSON.parse(_ms));
       } catch (e) {}
 
       // ── SESSION STORE ─────────────────────────────────────────────────────────────
@@ -804,7 +713,7 @@
 
       document.getElementById("home-link").addEventListener("click", (e) => {
         e.preventDefault();
-        App.load("meeting-intro", "/tools/meeting-tools/meeting-intro.js");
+        App.load("meeting-intro", "/tools/meeting-intro.js");
         closeAll();
       });
 
@@ -874,41 +783,91 @@
       document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeAll(); });
     </script>
 
-    <!-- ─── SHARED CALC DEPENDENCIES ── -->
-    <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+    <!-- ─── SHARED DEPENDENCIES ── -->
+    <!-- Chart.js CDN, components/simulation-engine.js, chart.js, donut-chart.js,
+         tool-input.js, tool-nav.js, and mobile-menu.js are NOT loaded here — audited
+         and confirmed unused by anything in tools/ (their only consumers were the
+         standalone calculators, which no longer live in this repo — see the
+         implementation plan, "Separate Financial Tools into its own repo"). Only
+         components/input-format.js (moneyToNumber/numToRand/numberToMoney — used
+         throughout meeting-tools) and components/tool-hero.js (CalcHero — used by
+         existing-portfolio/existing-policies/cashflow/estate-planning/
+         financial-planning) are real dependencies. -->
     <script defer src="/resources/constants.js"></script>
-    <script defer src="/components/simulation-engine.js"></script>
-    <script defer src="/components/chart.js"></script>
     <script defer src="/components/tool-hero.js"></script>
     <script defer src="/components/input-format.js"></script>
-    <script defer src="/components/donut-chart.js"></script>
-    <script defer src="/components/tool-input.js"></script>
-    <script defer src="/components/tool-nav.js"></script>
-    <script defer src="/components/mobile-menu.js"></script>
 
-    <script defer src="/tools/meeting-tools/meeting-shared.js"></script>
-    <script defer src="/tools/meeting-tools/meeting-intro.js"></script>
-    <script defer src="/tools/meeting-tools/timeline.js"></script>
-    <script defer src="/tools/meeting-tools/existing-portfolio.js"></script>
-    <script defer src="/tools/meeting-tools/existing-policies.js"></script>
-    <script defer src="/tools/meeting-tools/cashflow.js"></script>
-<script defer src="/tools/meeting-tools/wrapping-up.js"></script>
-    <script defer src="/tools/fa-tools/meeting-summary.js"></script>
-    <script defer src="/tools/fa-tools/record-of-advice.js"></script>
-    <script defer src="/tools/meeting-tools/cover-planning.js"></script>
-    <script defer src="/tools/meeting-tools/investment-planning.js"></script>
-    <script defer src="/tools/standalone/life-cover-calculator.js"></script>
-    <script defer src="/tools/standalone/retirement-calculator.js"></script>
-    <script defer src="/tools/standalone/post-retirement-calculator.js"></script>
-    <script defer src="/tools/standalone/investment-calculator.js"></script>
-    <script defer src="/tools/standalone/tfsa-calculator.js"></script>
-    <script defer src="/tools/standalone/tax-calculator.js"></script>
-    <script defer src="/tools/standalone/loan-calculator.js"></script>
-    <script defer src="/tools/standalone/education-calculator.js"></script>
-    <script defer src="/tools/meeting-tools/estate-planning.js"></script>
+    <script defer src="/tools/meeting-shared.js"></script>
+    <script defer src="/tools/meeting-intro.js"></script>
+    <script defer src="/tools/timeline.js"></script>
+    <script defer src="/tools/existing-portfolio.js"></script>
+    <script defer src="/tools/existing-policies.js"></script>
+    <script defer src="/tools/cashflow.js"></script>
+    <script defer src="/tools/wrapping-up.js"></script>
+    <script defer src="/tools/meeting-summary.js"></script>
+    <script defer src="/tools/record-of-advice.js"></script>
+    <script defer src="/tools/financial-planning.js"></script>
+    <script defer src="/tools/estate-planning.js"></script>
+
+    <!-- ─── STEWARD CALCULATORS (embedded, not local modules) ──────────────────
+         The Steward remains the one canonical calculator source. Instead of loading
+         tools/standalone/*.js here, fetch the calculator list from its public API
+         and register each as a lightweight "module" whose mount() just creates an
+         iframe pointed at The Steward's own embed mode (?embed=1) — reusing the
+         exact same App.register/_mountCalc/_wrappers pipeline every meeting-tools
+         panel already uses, unmodified. See functions/api/calculators.js and the
+         embed-mode CSS/script in thesteward.html (the-steward repo) for the other
+         half of this mechanism.
+         Known, accepted trade-off: since the calculator now runs in a cross-origin
+         iframe, its input values no longer auto-resume via _pendingToolStates after
+         closing and reopening the browser mid-meeting (that mechanism reads a
+         calculator's DOM/CalcState directly, in-page — it can't reach into an
+         iframe). Everything else about resuming a meeting is unaffected. -->
+    <script defer>
+      const STEWARD_BASE = "https://thesteward.co.za";
+
+      async function loadStewardCalculators() {
+        const mount = document.getElementById("nav-tools-mount");
+        let calculators = [];
+        try {
+          const res = await fetch(`${STEWARD_BASE}/api/calculators`);
+          if (res.ok) calculators = await res.json();
+        } catch (err) {
+          console.error("Could not reach The Steward's calculator API:", err);
+        }
+
+        calculators.forEach((calc) => {
+          window.App.register(calc.id, {
+            title: calc.title,
+            mount(wrapper) {
+              wrapper.innerHTML = `
+                <div class="glass-panel calc-glass" style="padding:0;overflow:hidden;">
+                  <iframe class="calc-embed-frame" title="${calc.title}"
+                    src="${calc.url}&embed=1"
+                    style="display:block;width:100%;height:100%;min-height:600px;border:none;"
+                    loading="lazy"></iframe>
+                </div>`;
+            },
+          });
+        });
+
+        if (mount) {
+          mount.innerHTML = calculators
+            .map(
+              (calc) => `
+              <a class="tool-lnk" data-calc="${calc.id}" data-href="" data-title="${calc.title}" data-desc="${calc.desc}">
+                ${calc.title}
+              </a>`
+            )
+            .join("\n");
+        }
+      }
+
+      loadStewardCalculators();
+    </script>
 
     <script>
-      window.MEETING_TOOLS = ["meeting-intro", "existing-portfolio", "existing-policies", "budget", "estate-planner", "life-cover", "wrap-up"];
+      window.MEETING_TOOLS = ["meeting-intro", "timeline", "existing-portfolio", "existing-policies", "cashflow", "estate-planning", "financial-planning", "wrapping-up"];
       const MEETING_TOOLS = window.MEETING_TOOLS;
 
       document.addEventListener("DOMContentLoaded", () => {

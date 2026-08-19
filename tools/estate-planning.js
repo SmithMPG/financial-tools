@@ -1,4 +1,4 @@
-// tools/meeting-tools/estate-planning.js
+// tools/estate-planning.js
 // Estate Planner — reads gross estate from Existing Portfolio via MeetingState.
 // Only captures deductions & designations; calculates estate duty and gap.
 
@@ -508,7 +508,7 @@
 
   function _template() {
     return `<div class="epn-wrapper calc-glass">
-      <div class="tool-hero-zone" id="hero-estate-planner"></div>
+      <div class="tool-hero-zone" id="hero-estate-planning"></div>
       <div class="epn-pane">
 
         <!-- 01 GROSS ESTATE -->
@@ -963,8 +963,8 @@
 
   // ── Module ─────────────────────────────────────────────────────────────────
 
-  window.App?.register("estate-planner", {
-    id: "estate-planner",
+  window.App?.register("estate-planning", {
+    id: "estate-planning",
     title: "Estate Planning",
 
     guide: {
@@ -980,7 +980,7 @@
       _injectCSS();
       wrapper.insertAdjacentHTML("beforeend", _template());
       const w = wrapper.querySelector(".epn-wrapper");
-      CalcHero.render("#hero-estate-planner", {
+      CalcHero.render("#hero-estate-planning", {
         primaries:   [{ id: "epn-hero-gap",      label: "Estate Gap"    }],
         secondaries: [
           { id: "epn-hero-duty",  label: "Estate Duty",   dot: "#b45309", negative: true },
@@ -997,11 +997,11 @@
       const _onState = (e) => {
         if (!wrapper.isConnected) return;
         const id = e.detail.toolId;
-        if (id === "timeline" || id === "budget") {
+        if (id === "timeline" || id === "cashflow") {
           _applyProfileDefaults(w);
         }
         if (id === "currentPortfolio" || id === "existingPolicies" ||
-            id === "timeline"          || id === "budget") {
+            id === "timeline"          || id === "cashflow") {
           update();
         }
       };

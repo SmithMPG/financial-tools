@@ -1,4 +1,4 @@
-// tools/meeting-tools/existing-policies.js
+// tools/existing-policies.js
 // Existing Policies – Risk Policies (life/disability/dread disease/income protection,
 // captured per policy with an optional type breakdown), Funeral Cover (captured per
 // policy with an open-ended breakdown of covered people), Medical & Health, and

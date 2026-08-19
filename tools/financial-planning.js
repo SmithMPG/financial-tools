@@ -1,4 +1,4 @@
-// tools/meeting-tools/financial-planning.js
+// tools/financial-planning.js
 
 (function () {
   "use strict";
@@ -132,7 +132,7 @@
 
   function _getData() {
     const ep     = window.MeetingState?.get("estatePlanner")   || {};
-    const budget = window.MeetingState?.get("budget")          || {};
+    const budget = window.MeetingState?.get("cashflow")          || {};
     const td     = _timelineData();
 
     return {

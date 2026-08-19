@@ -1,4 +1,4 @@
-// tools/meeting-tools/timeline.js
+// tools/timeline.js
 // Life & planning timeline — one chronological list of cards (date + description,
 // optional amount), covering personal, employment, and household milestones,
 // plus Past events (what already happened) and Planning events (what's still

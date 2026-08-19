@@ -1,4 +1,4 @@
-// tools/fa-tools/meeting-summary.js
+// tools/meeting-summary.js
 // Meeting Summary - post-meeting notes and formatted email/summary output.
 // Reads fact-find data from the DOM (other mounted tools) and MeetingState.
 
@@ -191,7 +191,7 @@
   }
 
   function _previewCashflow() {
-    const bud = window.MeetingState?.get("budget") || {};
+    const bud = window.MeetingState?.get("cashflow") || {};
     const netPay = bud.netPayMonthly || 0;
     if (!netPay && !bud.totalExpenses) return _empty("No cashflow captured yet");
     const seg = (label, val) => _row(label, _R(val), netPay > 0 ? _pct(val, netPay) : "");
@@ -421,7 +421,7 @@
 
   function _buildHTML(opts) {
     const intro = window.MeetingState?.get("meetingIntro") || {};
-    const bud  = window.MeetingState?.get("budget") || {};
+    const bud  = window.MeetingState?.get("cashflow") || {};
     const ep      = window.MeetingState?.get("existingPolicies") || {};
     const curPort = window.MeetingState?.get("currentPortfolio") || {};
     const est     = window.MeetingState?.get("estatePlanner") || {};

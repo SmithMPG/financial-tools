@@ -290,7 +290,7 @@
 <div class="bud-wrapper glass-panel glass-panel--light calc-glass">
   <div class="calc-layout">
 
-  <div class="tool-hero-zone" id="hero-budget"></div>
+  <div class="tool-hero-zone" id="hero-cashflow"></div>
 
   <div class="bud-pane">
 
@@ -538,7 +538,7 @@
   // ── MEETING STATE ──────────────────────────────────────────────────────────
   function _syncMeetingState(res, container) {
     if (!window.MeetingState) return;
-    window.MeetingState.set("budget", {
+    window.MeetingState.set("cashflow", {
       // ── Income ──
       netPayMonthly: res.netPayMonthly,
 
@@ -657,7 +657,7 @@
 
   // ── MODULE ─────────────────────────────────────────────────────────────────
   const MODULE = {
-    id: "budget",
+    id: "cashflow",
 
     mount(container) {
       _reset();
@@ -665,7 +665,7 @@
       container.insertAdjacentHTML("beforeend", _template());
 
       if (window.CalcHero) {
-        CalcHero.render("#hero-budget", {
+        CalcHero.render("#hero-cashflow", {
           primaries: [
             { id: "bud-hero-surplus", label: "Surplus" },
           ],
@@ -804,5 +804,5 @@
     },
   };
 
-  window.App.register("budget", MODULE);
+  window.App.register("cashflow", MODULE);
 })();
