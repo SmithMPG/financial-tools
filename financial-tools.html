@@ -1244,6 +1244,14 @@
     <script type="module">
       import { supabase } from "./resources/supabase.js";
 
+      // Wrapped in an async IIFE so the auth guard below can `return` to bail out
+      // early on no session — a bare top-level `return` in a module is a SyntaxError
+      // (parse-time, not runtime), which would silently kill this entire script for
+      // every visitor, logged in or not. All the onclick handlers used from the HTML
+      // (openMeeting, signOut, etc.) are still reachable — they're assigned onto
+      // `window` explicitly further down, not relying on global function scope.
+      await (async () => {
+
       // ── Auth guard ────────────────────────────────────────────────────────────
       const {
         data: { session },
@@ -2111,6 +2119,8 @@
       // (loadClients() is already kicked off above, right after auth, in parallel
       // with the advisor profile fetch — see "Load advisor profile + client list
       // concurrently".)
+
+      })();
     </script>
   </body>
 </html>
