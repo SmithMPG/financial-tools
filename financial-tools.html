@@ -1244,6 +1244,12 @@
     <script type="module">
       import { supabase } from "./resources/supabase.js";
 
+      // Declared here (not down by loadClients(), where it used to live) because
+      // loadClients() is now called early, right after auth — a `let` referenced
+      // before its own declaration line has run throws a TDZ ReferenceError, even
+      // from inside a function, if that function runs before the declaration does.
+      let allClients = [];
+
       // Wrapped in an async IIFE so the auth guard below can `return` to bail out
       // early on no session — a bare top-level `return` in a module is a SyntaxError
       // (parse-time, not runtime), which would silently kill this entire script for
@@ -1407,8 +1413,6 @@
       });
 
       // ── Load clients ──────────────────────────────────────────────────────────
-      let allClients = [];
-
       async function loadClients() {
         const { data, error } = await supabase
           .from("clients")
