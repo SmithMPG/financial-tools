@@ -771,6 +771,10 @@
 
         calculators.forEach((calc) => {
           window.App.register(calc.id, {
+            id: calc.id, // every App module carries its own id (see tools/*.js) — _mountCalc/goHome
+                         // look up `this._wrappers[this._active.id]` to hide the outgoing calc; without
+                         // this the previous Steward calculator's wrapper is never found and never
+                         // hidden, so opened calculators pile up visibly instead of swapping out.
             title: calc.title,
             mount(wrapper) {
               wrapper.innerHTML = `
@@ -785,10 +789,14 @@
         });
 
         if (mount) {
+          // Icon markup matches resources/nav-tools.js's own render() on The Steward —
+          // same 24x24 stroke-icon wrapper around the inner path/polyline the API returns.
           mount.innerHTML = calculators
             .map(
               (calc) => `
               <a class="tool-lnk" data-calc="${calc.id}" data-href="" data-title="${calc.title}" data-desc="${calc.desc}">
+                ${calc.icon ? `<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"
+                     viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">${calc.icon}</svg>` : ""}
                 ${calc.title}
               </a>`
             )
