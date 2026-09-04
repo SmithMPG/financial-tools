@@ -685,22 +685,39 @@
     }
   }
 
-  // When doc checkboxes change, inject/update a document request block in Next Steps
-  const DOCS_MARKER = "Please send me the following documents:";
+  // Auto-generated blocks appended to the Next Steps textarea: the action
+  // items captured on Wrapping Up's "Next Steps" list, then any checked
+  // Documents Required. Both are rebuilt together so re-syncing one never
+  // clobbers the other — everything above the first marker is treated as
+  // the advisor's own free-typed text and left untouched.
+  const WU_STEPS_MARKER = "Next steps agreed in this meeting:";
+  const DOCS_MARKER     = "Please send me the following documents:";
 
-  function _updateDocNextSteps(w) {
+  function _updateAutoNextSteps(w) {
     const nextEl = w.querySelector("#ms_nextsteps");
     if (!nextEl) return;
-    const checked = DOCS.filter(d => w.querySelector(`#${d.id}`)?.checked);
+    if (document.activeElement === nextEl) return; // don't clobber while the advisor is typing in it
+
     let text = nextEl.value;
-    // Strip any previously injected docs block (and the blank line before it)
-    const idx = text.indexOf(DOCS_MARKER);
-    if (idx !== -1) text = text.substring(0, idx).replace(/\n+$/, "");
-    if (checked.length > 0) {
-      const list = checked.map(d => `• ${d.label}`).join("\n");
-      text = (text ? text + "\n\n" : "") + DOCS_MARKER + "\n" + list;
-    }
-    nextEl.value = text;
+    const cutIdx = [WU_STEPS_MARKER, DOCS_MARKER]
+      .map(m => text.indexOf(m))
+      .filter(i => i !== -1)
+      .sort((a, b) => a - b)[0];
+    const manual = cutIdx === undefined ? text : text.substring(0, cutIdx).replace(/\n+$/, "");
+
+    const wuSteps = (window.MeetingState?.get("wrapUp")?.nextSteps || []).filter(Boolean);
+    const wuBlock = wuSteps.length
+      ? WU_STEPS_MARKER + "\n" + wuSteps.map((s, i) => `${i + 1}. ${s}`).join("\n")
+      : "";
+
+    const checked = DOCS.filter(d => w.querySelector(`#${d.id}`)?.checked);
+    const docsBlock = checked.length
+      ? DOCS_MARKER + "\n" + checked.map(d => `• ${d.label}`).join("\n")
+      : "";
+
+    const autoBlock = [wuBlock, docsBlock].filter(Boolean).join("\n\n");
+    const newText = manual ? (autoBlock ? manual + "\n\n" + autoBlock : manual) : autoBlock;
+    if (newText !== nextEl.value) nextEl.value = newText;
   }
 
   function _showToast(toastId) {
@@ -776,8 +793,9 @@
       }
 
       DOCS.forEach(d => {
-        w.querySelector(`#${d.id}`)?.addEventListener("change", () => _updateDocNextSteps(w));
+        w.querySelector(`#${d.id}`)?.addEventListener("change", () => _updateAutoNextSteps(w));
       });
+      _updateAutoNextSteps(w);
 
       const _renderPreviews = () => {
         SEND_BLOCKS.forEach(b => {
@@ -798,6 +816,7 @@
         if (!wrapper.isConnected) return;
         if (document.activeElement?.closest(".ms-send-list")) return;
         _renderPreviews();
+        _updateAutoNextSteps(w);
       };
       document.addEventListener("meetingstate", this._onState);
 

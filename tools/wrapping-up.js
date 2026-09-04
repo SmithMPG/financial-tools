@@ -90,6 +90,15 @@
     </div>`;
   }
 
+  // ── Next step row ──────────────────────────────────────────────────────────
+
+  function _nextStepRow() {
+    return `<div class="mt-secondary" style="display:flex;align-items:center;gap:0.4rem">
+      <button class="mt-secondary-x" type="button" title="Remove">×</button>
+      <input class="mt-input-sm" type="text" placeholder="e.g. Change beneficiary details" autocomplete="off" style="flex:1;min-width:0">
+    </div>`;
+  }
+
   // ── Template ───────────────────────────────────────────────────────────────
 
   function _template() {
@@ -163,7 +172,20 @@
           </div>
         </div>
 
-        <!-- Section 3: Next Meeting -->
+        <!-- Section 3: Next Steps -->
+        <div class="mt-primary collapsed" id="wu_next_steps_sec">
+          <div class="mt-primary-hdr">
+            <div class="mt-primary-title">Next Steps</div>
+            <span class="mt-chev"></span>
+          </div>
+          <div class="mt-primary-body">
+            <div class="cm-sec-pad">
+              <div id="wu_next_steps_rows" style="display:flex;flex-direction:column;gap:0.3rem;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 4: Next Meeting -->
         <div class="mt-primary collapsed" id="wu_next_meeting_sec">
           <div class="mt-primary-hdr">
             <div class="mt-primary-title">Next Meeting</div>
@@ -197,6 +219,12 @@
       referrals.push({ name: inputs[0]?.value || "", relation: inputs[1]?.value || "", occupation: inputs[2]?.value || "", contact: inputs[3]?.value || "" });
     });
 
+    const nextSteps = [];
+    w.querySelectorAll("#wu_next_steps_rows .mt-secondary").forEach((row) => {
+      const val = row.querySelector("input")?.value.trim() || "";
+      if (val) nextSteps.push(val);
+    });
+
     window.MeetingState.set("wrapUp", {
       faisSigned:    willYn("wu_fais_signed"),
       hasWill:       willYn("wu_has_will"),
@@ -206,6 +234,7 @@
       willContact:   willYn("wu_will_contact"),
       serviceRating: ratingTouched ? g("wu_service_rating") : "",
       referrals,
+      nextSteps,
       nextMeetingDate: g("wu_next_meeting_date"),
       nextMeetingTime: g("wu_next_meeting_time"),
     });
@@ -222,6 +251,7 @@
         html: `<p>Start by getting the FAIS intro letter signed, now that the meeting's substance has been covered.</p>
                <p>Then capture the client's will status and service rating before closing the meeting.</p>
                <p>Once the client rates the conversation, the referrals table appears with rows matching their score.</p>
+               <p>Capture any next steps as they come up — these carry through to the Next Steps field in Meeting Summary.</p>
                <p>Finish by locking in the date and time of the next meeting.</p>`,
       },
     },
@@ -280,6 +310,19 @@
         }
       });
 
+      const nextStepsRows = w.querySelector("#wu_next_steps_rows");
+      MtUI.initDeleteMode(w.querySelector("#wu_next_steps_sec"), {
+        addLabel: "+ Add next step",
+        onAdd: () => {
+          nextStepsRows.insertAdjacentHTML("beforeend", _nextStepRow());
+          _sync(w, _ratingTouched);
+        },
+        onDelete: (row) => {
+          row.remove();
+          _sync(w, _ratingTouched);
+        },
+      });
+
       w.addEventListener("input", () => _sync(w, _ratingTouched));
     },
 
@@ -300,7 +343,11 @@
         [...row.querySelectorAll("input")].map((inp) => inp.value || "")
       );
 
-      return { ynButtons, ratingTouched, ratingVal, referralRows };
+      const nextStepRows = [...w.querySelectorAll("#wu_next_steps_rows .mt-secondary")].map(
+        (row) => row.querySelector("input")?.value || ""
+      );
+
+      return { ynButtons, ratingTouched, ratingVal, referralRows, nextStepRows };
     },
 
     setState(extra) {
@@ -333,6 +380,18 @@
             const row = rows[ri];
             if (!row) return;
             row.querySelectorAll("input").forEach((inp, ci) => { if (cols[ci] !== undefined) inp.value = cols[ci]; });
+          });
+        }
+      }
+
+      if (extra.nextStepRows && extra.nextStepRows.length > 0) {
+        const nextStepsRows = w.querySelector("#wu_next_steps_rows");
+        if (nextStepsRows) {
+          extra.nextStepRows.forEach((val) => {
+            nextStepsRows.insertAdjacentHTML("beforeend", _nextStepRow());
+            const row = nextStepsRows.lastElementChild;
+            const inp = row?.querySelector("input");
+            if (inp) inp.value = val;
           });
         }
       }
