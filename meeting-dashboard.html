@@ -303,9 +303,10 @@
       <div class="guide-shimmer" id="guide-shimmer" aria-hidden="true"></div>
       <div class="glass-content">
         <div class="guide-profile" id="guide-profile-header">
-          <img src="resources/profile_pictures/MPG_Smith.png" alt="Matthew PG Smith" class="guide-avatar" id="guide-avatar" />
+          <img alt="" class="guide-avatar" id="guide-avatar" style="display: none" />
+          <span class="guide-avatar-initials" id="guide-avatar-initials">?</span>
           <div>
-            <div class="guide-id-name" id="guide-id-name">Matthew PG Smith</div>
+            <div class="guide-id-name" id="guide-id-name">Your Advisor</div>
             <div class="guide-id-role">Financial Advisor</div>
           </div>
         </div>
@@ -810,6 +811,35 @@
       window.MEETING_TOOLS = ["meeting-intro", "timeline", "existing-portfolio", "existing-policies", "cashflow", "estate-planning", "financial-planning", "wrapping-up"];
       const MEETING_TOOLS = window.MEETING_TOOLS;
 
+      function getInitials(str) {
+        return (
+          (str || "")
+            .split(" ")
+            .map((p) => p[0])
+            .join("")
+            .slice(0, 2)
+            .toUpperCase() || "?"
+        );
+      }
+
+      // No hardcoded fallback photo here on purpose — this dashboard is shared by
+      // every advisor's own login, so the avatar must come from that advisor's own
+      // profile (or fall back to their initials), never to a stand-in image.
+      function applyAdviserAvatar(adviser) {
+        const avatar = document.getElementById('guide-avatar');
+        const initials = document.getElementById('guide-avatar-initials');
+        if (adviser?.img) {
+          avatar.src = adviser.img;
+          avatar.alt = adviser.name || "";
+          avatar.style.display = "";
+          initials.style.display = "none";
+        } else {
+          avatar.style.display = "none";
+          initials.style.display = "";
+          initials.textContent = getInitials(adviser?.name);
+        }
+      }
+
       document.addEventListener("DOMContentLoaded", async () => {
         // Wait for Supabase auth + client data before mounting tools
         if (window._supabaseClientReady) await window._supabaseClientReady;
@@ -817,8 +847,7 @@
         // Apply active adviser from URL
         const adviser = window.ACTIVE_ADVISER;
         if (adviser) {
-          const avatar = document.getElementById('guide-avatar');
-          if (avatar) { avatar.src = adviser.img; avatar.alt = adviser.name; }
+          applyAdviserAvatar(adviser);
           const nameEl = document.getElementById('guide-id-name');
           if (nameEl) nameEl.textContent = adviser.name;
           document.title = 'The Steward – ' + adviser.name;
