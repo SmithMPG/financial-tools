@@ -356,7 +356,7 @@
             Record of Advice
           </a>
 
-          <a class="tool-lnk" href="./financial-tools.html">
+          <a class="tool-lnk" href="./">
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
               <polyline points="15 18 9 12 15 6" />
             </svg>
@@ -718,15 +718,14 @@
 
     <!-- ─── SHARED DEPENDENCIES ── -->
     <!-- Chart.js CDN, components/simulation-engine.js, chart.js, donut-chart.js,
-         tool-input.js, tool-nav.js, and mobile-menu.js are NOT loaded here — audited
-         and confirmed unused by anything in tools/ or tools/
+         tool-input.js, tool-nav.js, mobile-menu.js, and resources/constants.js are
+         NOT loaded here — audited and confirmed unused by anything in tools/
          (their only consumers were the standalone calculators, which no longer live
          in this repo — see the implementation plan, "Separate Financial Tools into
          its own repo"). Only components/input-format.js (moneyToNumber/numToRand/
          numberToMoney — used throughout meeting-tools) and components/tool-hero.js
          (CalcHero — used by existing-portfolio/existing-policies/cashflow/
          estate-planning/financial-planning) are real dependencies. -->
-    <script defer src="resources/constants.js"></script>
     <script defer src="components/tool-hero.js"></script>
     <script defer src="components/input-format.js"></script>
 
@@ -965,7 +964,7 @@
       window._advisorSession = session;
 
       const clientId = new URLSearchParams(location.search).get("client");
-      if (!clientId) { location.href = "./financial-tools.html"; return; }
+      if (!clientId) { location.href = "./"; return; }
       window._activeClientId = clientId;
 
       // Advisor profile and client record don't depend on each other — only both

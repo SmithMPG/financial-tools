@@ -265,87 +265,6 @@
         text-overflow: ellipsis;
       }
 
-      .lead-card-row {
-        display: flex;
-        align-items: stretch;
-        gap: 0.75rem;
-        width: 100%;
-      }
-      .lead-source-col {
-        width: 225px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: #0b1221;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 0.75rem;
-        padding: 0.85rem 1rem;
-        box-shadow: 0 4px 12px rgba(11, 18, 33, 0.15);
-        font-family: var(--fb);
-        font-size: 0.82rem;
-        font-weight: 600;
-        color: var(--white);
-        white-space: nowrap;
-        text-align: center;
-      }
-      .lead-card-row .client-card {
-        flex: 1;
-        min-width: 0;
-      }
-
-      .client-col-time {
-        flex: 0 0 auto;
-        width: 3.75rem;
-        justify-content: center;
-        padding-left: 0;
-      }
-      .time-label {
-        font-size: 0.85rem;
-        font-weight: 700;
-        color: var(--gold);
-        cursor: pointer;
-        padding: 0.15rem 0.35rem;
-        border-radius: 0.3rem;
-        transition: background 0.15s;
-      }
-      .time-label:hover {
-        background: rgba(212, 168, 67, 0.12);
-      }
-      .time-label-empty {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--gold);
-        opacity: 0.8;
-        cursor: pointer;
-        padding: 0.15rem 0.35rem;
-        border-radius: 0.3rem;
-      }
-
-      .date-divider {
-        display: flex;
-        align-items: center;
-        gap: 0.85rem;
-        padding: 1rem 0 0.4rem;
-      }
-      .date-divider:first-child {
-        padding-top: 0.25rem;
-      }
-      .date-divider-label {
-        font-size: 0.72rem;
-        font-weight: 700;
-        color: var(--muted);
-        text-transform: uppercase;
-        letter-spacing: 0.07em;
-        white-space: nowrap;
-      }
-      .date-divider-line {
-        flex: 1;
-        height: 1px;
-        background: rgba(255, 255, 255, 0.07);
-      }
-
-
       .col-value {
         font-size: 0.82rem;
         color: var(--muted);
@@ -545,63 +464,6 @@
         color: var(--dim);
       }
 
-      .modal-row {
-        display: flex;
-        gap: 0.65rem;
-        align-items: stretch;
-      }
-      .modal-row > div {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-      }
-
-      #modal.single-col .modal-row {
-        flex-direction: column;
-        gap: 0.85rem;
-      }
-
-      .modal select {
-        width: 100%;
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 0.6rem;
-        color: var(--white);
-        font-family: var(--fb);
-        font-size: 0.9rem;
-        padding: 0.65rem 0.85rem;
-        outline: none;
-        cursor: pointer;
-        transition: border-color 0.15s;
-        color-scheme: dark;
-      }
-      .modal select:focus {
-        border-color: rgba(212, 168, 67, 0.5);
-      }
-
-      .time-selects {
-        display: flex;
-        align-items: center;
-        gap: 0.4rem;
-        height: 100%;
-      }
-      .time-selects select {
-        flex: 1;
-        height: 100%;
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        appearance: none;
-        text-align: center;
-        text-align-last: center;
-        padding-left: 0;
-        padding-right: 0;
-      }
-      .time-sep {
-        font-size: 1.1rem;
-        font-weight: 700;
-        color: var(--muted);
-        flex-shrink: 0;
-      }
 
       .modal-actions {
         display: flex;
@@ -753,18 +615,6 @@
         border-color: rgba(212, 168, 67, 0.45);
       }
 
-
-      /* ── Questionnaire dot ───────────────────────────────────────────────────── */
-      .unread-corner {
-        position: absolute;
-        top: -24px;
-        right: -24px;
-        width: 48px;
-        height: 48px;
-        background: #ef4444;
-        transform: rotate(45deg);
-        pointer-events: none;
-      }
 
       /* ── Tab bar ─────────────────────────────────────────────────────────────── */
       .tab-bar {
@@ -1057,18 +907,7 @@
 
     <!-- Tab bar -->
     <div class="tab-bar" id="tab-bar">
-      <div class="tab tab-no-move" data-tab="leads" title="Leads — questionnaire submissions from new contacts">
-        <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-          <circle cx="9" cy="7" r="4"/>
-          <line x1="19" y1="8" x2="19" y2="14"/>
-          <line x1="22" y1="11" x2="16" y2="11"/>
-        </svg>
-        <span class="tab-count" id="count-leads">0</span>
-      </div>
-      <div class="tab active" data-tab="upcoming">Upcoming Meetings <span class="tab-count" id="count-upcoming">0</span></div>
-      <div class="tab" data-tab="action-you">Action Required <span class="tab-count" id="count-action-you">0</span></div>
-      <div class="tab" data-tab="action-client">Waiting on Client <span class="tab-count" id="count-action-client">0</span></div>
+      <div class="tab active" data-tab="prospects">Prospects <span class="tab-count" id="count-prospects">0</span></div>
       <div class="tab" data-tab="clients">Clients <span class="tab-count" id="count-clients">0</span></div>
       <div class="tab tab-no-move" data-tab="no-move" title="Did Not Move Forward">
         <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1116,35 +955,6 @@
         <div class="modal-actions">
           <button class="btn-cancel" onclick="closeModal()">Cancel</button>
           <button class="btn-save" id="btn-save" onclick="createClient()">Create Client</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Meeting date modal (shown when dragging to Upcoming) -->
-    <div class="modal-backdrop" id="meeting-date-modal">
-      <div class="modal">
-        <h2>Schedule Meeting</h2>
-        <div class="modal-fields">
-          <div class="modal-row">
-            <div>
-              <label for="md-date">Date</label>
-              <input type="date" id="md-date" />
-            </div>
-            <div>
-              <label>Time</label>
-              <div class="time-selects">
-                <select id="md-hour"></select>
-                <span class="time-sep">:</span>
-                <select id="md-min"></select>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="modal-error" id="md-error"></div>
-        <div class="modal-actions">
-          <button class="btn-cancel" onclick="closeMeetingDateModal()">Close</button>
-          <button class="btn-cancel" id="md-clear-btn" onclick="clearMeetingDate()" style="display:none;color:#fca5a5;border-color:rgba(239,68,68,0.25)">Clear</button>
-          <button class="btn-save" id="md-save-btn" onclick="confirmMeetingDate()">Confirm</button>
         </div>
       </div>
     </div>
@@ -1220,12 +1030,6 @@
         <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
           <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-        </svg>
-      </button>
-      <button class="btn-menu-action btn-menu-edit" id="row-panel-questionnaire" onclick="openQuestionnaire()">
-        Open Tool
-        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="9 18 15 12 9 6"/>
         </svg>
       </button>
       <button class="btn-menu-action btn-menu-edit" id="row-panel-notes" onclick="openNotesModal()">
@@ -1416,7 +1220,7 @@
       async function loadClients() {
         const { data, error } = await supabase
           .from("clients")
-          .select("id, first_name, last_name, email, phone, meeting_date, meeting_time, tab, source, questionnaire_unread, questionnaire_submitted_at, notes")
+          .select("id, first_name, last_name, email, phone, tab, notes")
           .order("created_at", { ascending: false });
 
         if (error) {
@@ -1433,17 +1237,8 @@
         const emailVal = c.email ? c.email.replace(/'/g, "\\'") : "";
         const phoneVal = c.phone ? c.phone.replace(/'/g, "\\'") : "";
         const waNum    = c.phone ? c.phone.replace(/\D/g, "").replace(/^0/, "27") : "";
-        const calIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`;
-        const timeCol = `<div class="client-col client-col-time">
-               ${
-                 c.meeting_date && c.meeting_time
-                   ? `<span class="time-label" onclick="openMeetingDateModal('${c.id}', '${c.meeting_date}', '${c.meeting_time}')">${c.meeting_time.slice(0, 5).replace(":", "h")}</span>`
-                   : `<span class="time-label-empty" onclick="openMeetingDateModal('${c.id}', '${c.meeting_date || ""}', '')" title="Schedule meeting">${calIcon}</span>`
-               }
-             </div>`;
 
         return `<div class="client-card" draggable="true" data-id="${c.id}">
-          ${timeCol}
           <div class="client-col client-col-name">
             <div class="client-name">${name}</div>
           </div>
@@ -1464,7 +1259,6 @@
           <div class="client-col client-col-actions">
             <button class="btn-action btn-meeting" onclick="openMeeting('${c.id}')">Open Meeting</button>
           </div>
-          ${c.questionnaire_unread ? `<span class="unread-corner"></span>` : ""}
           <button class="btn-chevron" onclick="openRowPanel('${c.id}', this)" title="More options">
             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
           </button>
@@ -1481,51 +1275,8 @@
           return;
         }
 
-        if (tab === "upcoming") {
-          clients.sort((a, b) => {
-            if (!a.meeting_date && !b.meeting_date) return 0;
-            if (!a.meeting_date) return 1;
-            if (!b.meeting_date) return -1;
-            if (a.meeting_date !== b.meeting_date) return new Date(a.meeting_date) - new Date(b.meeting_date);
-            return (a.meeting_time || "").localeCompare(b.meeting_time || "");
-          });
-
-          // Group by date
-          const groups = {};
-          const noDate = [];
-          clients.forEach((c) => {
-            if (c.meeting_date) {
-              (groups[c.meeting_date] = groups[c.meeting_date] || []).push(c);
-            } else {
-              noDate.push(c);
-            }
-          });
-
-          let html = "";
-          Object.keys(groups)
-            .sort()
-            .forEach((date) => {
-              const d = new Date(date + "T00:00:00");
-              const label = d.toLocaleDateString("en-ZA", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
-              html += `<div class="date-divider"><span class="date-divider-label">${label}</span><div class="date-divider-line"></div></div>`;
-              html += groups[date].map((c) => buildCard(c)).join("");
-            });
-          if (noDate.length) {
-            html += `<div class="date-divider"><span class="date-divider-label">No date set</span><div class="date-divider-line"></div></div>`;
-            html += noDate.map((c) => buildCard(c)).join("");
-          }
-          list.innerHTML = html;
-        } else if (tab === "leads") {
-          list.innerHTML = clients.map((c) => {
-            const label = SOURCE_LABELS[c.source] || c.source || "—";
-            return `<div class="lead-card-row">
-              <div class="lead-source-col">${label}</div>
-              ${buildCard(c)}
-            </div>`;
-          }).join("");
-        } else {
-          list.innerHTML = clients.map((c) => buildCard(c)).join("");
-        }
+        clients.sort((a, b) => (a.first_name || "").localeCompare(b.first_name || ""));
+        list.innerHTML = clients.map((c) => buildCard(c)).join("");
       }
 
       window.filterClients = function () {
@@ -1692,7 +1443,7 @@
             email: email || null,
             phone: phone || null,
             notes: notes || null,
-            tab: "action-you",
+            tab: "prospects",
           })
           .select("id")
           .single();
@@ -1722,27 +1473,6 @@
       const rowPanel = document.getElementById("row-panel");
       const rowPanelDelete = document.getElementById("row-panel-delete");
 
-      const SOURCE_LABELS = {
-        retirement_readiness:   "Retirement Readiness",
-        home_screen:            "The Steward",
-        investment_callback:    "Investment Calculator",
-        tfsa_callback:          "TFSA Calculator",
-        retirement_callback:    "Retirement Calculator",
-        tax_callback:           "Tax Calculator",
-        education_callback:     "Education Calculator",
-        loan_callback:          "Loan Calculator",
-        life_cover_callback:    "Life Cover Calculator",
-        holiday_callback:       "Holiday Calculator",
-        future_value_callback:  "Future Value Calculator",
-        cgt_callback:           "CGT Calculator",
-        // legacy keys
-        retirement:             "Retirement Readiness",
-        "post-retirement":      "Post-Retirement Calculator",
-        investment:             "Investment Calculator",
-        tfsa:                   "TFSA Calculator",
-        callback:               "The Steward",
-      };
-
       window.openRowPanel = async function (clientId, chevron) {
         panelClientId = clientId;
         const card = chevron.closest(".client-card");
@@ -1751,17 +1481,6 @@
         rowPanel.style.height = rect.height + "px";
         rowDim.classList.add("open");
         rowPanel.classList.add("open");
-
-        // Update questionnaire button state
-        const c = allClients.find((x) => x.id === clientId);
-        const qBtn = document.getElementById("row-panel-questionnaire");
-        if (c && c.questionnaire_submitted_at) {
-          qBtn.style.opacity = "1";
-          qBtn.style.pointerEvents = "";
-        } else {
-          qBtn.style.opacity = "0.4";
-          qBtn.style.pointerEvents = "none";
-        }
       };
 
       window.closeRowPanel = function () {
@@ -1826,54 +1545,6 @@
         if (e.target === this) closeNotesModal();
       });
 
-      const SOURCE_TO_CALC = {
-        retirement_readiness:  "retirement",
-        investment_callback:   "investment",
-        tfsa_callback:         "tfsa",
-        retirement_callback:   "retirement",
-        tax_callback:          "tax",
-        education_callback:    "education",
-        loan_callback:         "loan",
-        life_cover_callback:   "life-cover-calc",
-        holiday_callback:      "holiday",
-        future_value_callback: "future-value",
-        cgt_callback:          "cgt",
-        // legacy
-        retirement:            "retirement",
-        investment:            "investment",
-        tfsa:                  "tfsa",
-        "post-retirement":     "post-retirement",
-      };
-
-      window.openQuestionnaire = async function () {
-        if (!panelClientId) return;
-        const { data: submissions } = await supabase
-          .from("lead_magnets")
-          .select("source, answers")
-          .eq("contact_id", panelClientId)
-          .order("created_at", { ascending: false })
-          .limit(1);
-        const submission = submissions?.[0];
-        if (!submission) return;
-
-        const calcId = SOURCE_TO_CALC[submission.source];
-        if (!calcId) return;
-
-        sessionStorage.setItem("calc_prefill", JSON.stringify({
-          calculator: calcId,
-          values: submission.answers,
-        }));
-
-        // Mark as read
-        await supabase.from("clients").update({ questionnaire_unread: false }).eq("id", panelClientId);
-        const c = allClients.find((x) => x.id === panelClientId);
-        if (c) c.questionnaire_unread = false;
-
-        closeRowPanel();
-        renderClients(allClients);
-        location.href = `./thesteward.html?calc=${calcId}`;
-      };
-
       rowPanelDelete.addEventListener("click", async () => {
         if (!panelClientId) return;
         if (!rowPanelDelete.classList.contains("confirming")) {
@@ -1891,7 +1562,7 @@
         }
       });
 
-      // ── Tab assignments (localStorage) ───────────────────────────────────────
+      // ── Tab assignments ───────────────────────────────────────────────────────
       function clientTab(c) {
         return c.tab || "clients";
       }
@@ -1908,7 +1579,7 @@
       }
 
       function updateTabCounts() {
-        ["upcoming", "action-you", "action-client", "clients", "leads", "no-move"].forEach((tab) => {
+        ["prospects", "clients", "no-move"].forEach((tab) => {
           const count = allClients.filter((c) => clientTab(c) === tab).length;
           const el = document.getElementById(`count-${tab}`);
           if (el) el.textContent = count;
@@ -2001,118 +1672,11 @@
           if (!dragClientId) return;
           const targetTab = tab.dataset.tab;
           const id = dragClientId;
-          const sourceTab = clientTab(allClients.find((x) => x.id === id) || {});
           dragClientId = null;
-          if (sourceTab === "upcoming" && targetTab !== "upcoming") {
-            supabase.from("clients").update({ meeting_date: null, meeting_time: null }).eq("id", id);
-            const c = allClients.find((x) => x.id === id);
-            if (c) { c.meeting_date = null; c.meeting_time = null; }
-          }
           setTabAssignment(id, targetTab);
           updateTabCounts();
           renderClients(allClients);
         });
-      });
-
-      // ── Meeting date modal ────────────────────────────────────────────────────
-
-      // Populate hour + minute selects once
-      (function buildTimeSelects() {
-        function fillSelects(hourId, minId) {
-          const hourSel = document.getElementById(hourId);
-          const minSel = document.getElementById(minId);
-          for (let h = 6; h <= 20; h++) {
-            const opt = document.createElement("option");
-            opt.value = String(h).padStart(2, "0");
-            opt.textContent = String(h).padStart(2, "0");
-            hourSel.appendChild(opt);
-          }
-          ["00", "15", "30", "45"].forEach((m) => {
-            const opt = document.createElement("option");
-            opt.value = m;
-            opt.textContent = m;
-            minSel.appendChild(opt);
-          });
-          hourSel.value = "09";
-        }
-        fillSelects("md-hour", "md-min");
-      })();
-
-      let pendingUpcomingClientId = null;
-
-      window.openMeetingDateModal = function (clientId, existingDate, existingTime) {
-        pendingUpcomingClientId = clientId;
-        const isEditing = !!(existingDate && existingTime);
-
-        document.querySelector("#meeting-date-modal h2").textContent = isEditing ? "Edit Meeting" : "Schedule Meeting";
-        document.getElementById("md-date").value = existingDate || new Date().toISOString().split("T")[0];
-
-        if (existingTime) {
-          const [h, m] = existingTime.split(":");
-          document.getElementById("md-hour").value = h;
-          const mins = ["00", "15", "30", "45"];
-          const snapped = mins.reduce((prev, cur) => (Math.abs(+cur - +m) < Math.abs(+prev - +m) ? cur : prev));
-          document.getElementById("md-min").value = snapped;
-        } else {
-          document.getElementById("md-hour").value = "09";
-          document.getElementById("md-min").value = "00";
-        }
-
-        document.getElementById("md-error").classList.remove("visible");
-        document.getElementById("md-save-btn").disabled = false;
-        document.getElementById("md-clear-btn").style.display = isEditing ? "" : "none";
-        document.getElementById("meeting-date-modal").classList.add("open");
-      };
-
-      window.closeMeetingDateModal = function () {
-        document.getElementById("meeting-date-modal").classList.remove("open");
-        pendingUpcomingClientId = null;
-      };
-
-      window.clearMeetingDate = async function () {
-        if (!pendingUpcomingClientId) return;
-        await supabase.from("clients").update({ meeting_date: null, meeting_time: null }).eq("id", pendingUpcomingClientId);
-        const c = allClients.find((x) => x.id === pendingUpcomingClientId);
-        if (c) { c.meeting_date = null; c.meeting_time = null; }
-        closeMeetingDateModal();
-        renderClients(allClients);
-      };
-
-      window.confirmMeetingDate = async function () {
-        const dateVal = document.getElementById("md-date").value;
-        const hour = document.getElementById("md-hour").value;
-        const min = document.getElementById("md-min").value;
-        const timeVal = hour && min ? `${hour}:${min}` : null;
-        const errEl = document.getElementById("md-error");
-        errEl.classList.remove("visible");
-        if (!dateVal) {
-          errEl.textContent = "Please pick a meeting date.";
-          errEl.classList.add("visible");
-          return;
-        }
-        const saveBtn = document.getElementById("md-save-btn");
-        saveBtn.disabled = true;
-        const { error } = await supabase.from("clients").update({ meeting_date: dateVal, meeting_time: timeVal }).eq("id", pendingUpcomingClientId);
-        saveBtn.disabled = false;
-        if (error) {
-          errEl.textContent = error.message;
-          errEl.classList.add("visible");
-          return;
-        }
-        const c = allClients.find((x) => x.id === pendingUpcomingClientId);
-        if (c) {
-          c.meeting_date = dateVal;
-          c.meeting_time = timeVal;
-        }
-        setTabAssignment(pendingUpcomingClientId, "upcoming");
-        closeMeetingDateModal();
-        updateTabCounts();
-        renderClients(allClients);
-      };
-
-
-      document.getElementById("meeting-date-modal").addEventListener("click", function (e) {
-        if (e.target === this) closeMeetingDateModal();
       });
 
       // ── Close modal on backdrop click ─────────────────────────────────────────

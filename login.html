@@ -175,7 +175,7 @@
 
     // Redirect if already logged in
     const { data: { session } } = await supabase.auth.getSession();
-    if (session) location.href = "./financial-tools.html";
+    if (session) location.href = "./";
 
     window.signIn = async function () {
       const email    = document.getElementById("email").value.trim();
@@ -195,7 +195,7 @@
         btn.disabled = false;
         btn.textContent = "Sign In";
       } else {
-        location.href = "./financial-tools.html";
+        location.href = "./";
       }
     };
 
