@@ -52,6 +52,7 @@
     { category: "planning",   label: "Holiday",               description: "Holiday",              field: "amount", field2: "location" },
     { category: "planning",   label: "House Deposit",        description: "House deposit",        field: "amount", field2: "location" },
     { category: "planning",   label: "Retirement Funding",   description: "Retirement Funding",   field: "amount" },
+    { category: "planning",   label: "Wedding",              description: "Wedding",              field: "amount" },
 
     // One custom fallback per category, always last in its dropdown — description
     // starts blank so the FA can type whatever isn't covered by a preset above,

@@ -572,6 +572,19 @@
 
       function resetGuide() { setGuide(HOME_HEADING, HOME_TEXT); }
 
+      // Steward calculators mount as a cross-origin iframe (see loadStewardCalculators
+      // below) — a click on a field label or chart bar inside it fires The Steward's
+      // own App.setGuide, in its own document, with no way to reach this page's guide
+      // panel except by telling us. The Steward broadcasts every guide update via
+      // postMessage (see its index.html's _broadcastGuide) whenever it's embedded;
+      // this is the other half — listen for it and mirror it into our own panel, the
+      // same way a click on a local tools/*.js field label already does via App.setGuide.
+      window.addEventListener("message", (event) => {
+        if (event.origin !== "https://thesteward.co.za") return;
+        if (event.data?.type !== "steward:guide") return;
+        setGuide(event.data.heading, event.data.html);
+      });
+
       // ── APP ───────────────────────────────────────────────────────────────────────
       const isMobile = () => window.matchMedia("(max-width: 1000px)").matches;
 
@@ -720,11 +733,15 @@
 
       document.getElementById("guide-profile-header").addEventListener("click", () => App.revertGuide());
 
-      document.querySelectorAll(".tool-lnk[data-calc]").forEach((link) => {
-        link.addEventListener("click", (e) => {
-          e.preventDefault();
-          App.load(link.dataset.calc, link.dataset.href);
-        });
+      // Delegated (not queried-and-bound-once): the Steward calculator links are
+      // injected into #nav-tools-mount later, asynchronously, by
+      // loadStewardCalculators() below — a one-time querySelectorAll().forEach()
+      // here would run before those links exist and they'd never get a handler.
+      document.addEventListener("click", (e) => {
+        const link = e.target.closest(".tool-lnk[data-calc]");
+        if (!link) return;
+        e.preventDefault();
+        App.load(link.dataset.calc, link.dataset.href);
       });
 
       // ── RESET BUTTON ──────────────────────────────────────────────────────────────
@@ -838,12 +855,24 @@
 
         calculators.forEach((calc) => {
           window.App.register(calc.id, {
+            id: calc.id, // every App module carries its own id (see tools/*.js) — _mountCalc/goHome
+                         // look up `this._wrappers[this._active.id]` to hide the outgoing calc; without
+                         // this the previous Steward calculator's wrapper is never found and never
+                         // hidden, so opened calculators pile up visibly instead of swapping out.
             title: calc.title,
+            // The API now includes each calculator's guide copy (same intro/per-field
+            // heading+html CalcHero shows on The Steward itself — see The Steward's
+            // resources/calc-guides.js and functions/api/calculators.js). Carrying it
+            // through here is what makes _mountCalc's `if (mod.guide?.intro)` check
+            // fire for a Steward calculator, same as it already does for the local
+            // tools/*.js modules — without this, opening one left the guide panel
+            // showing whatever it last had (e.g. stuck on "Opening the meeting").
+            guide: calc.guide,
             mount(wrapper) {
               wrapper.innerHTML = `
                 <div class="glass-panel calc-glass" style="padding:0;overflow:hidden;">
                   <iframe class="calc-embed-frame" title="${calc.title}"
-                    src="${calc.url}&embed=1"
+                    src="${calc.url}"
                     style="display:block;width:100%;height:100%;min-height:600px;border:none;"
                     loading="lazy"></iframe>
                 </div>`;

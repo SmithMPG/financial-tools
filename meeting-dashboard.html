@@ -513,6 +513,19 @@
 
       function resetGuide() { setGuide(HOME_HEADING, HOME_TEXT); }
 
+      // Steward calculators mount as a cross-origin iframe (see loadStewardCalculators
+      // below) — a click on a field label or chart bar inside it fires The Steward's
+      // own App.setGuide, in its own document, with no way to reach this page's guide
+      // panel except by telling us. The Steward broadcasts every guide update via
+      // postMessage (see its index.html's _broadcastGuide) whenever it's embedded;
+      // this is the other half — listen for it and mirror it into our own panel, the
+      // same way a click on a local tools/*.js field label already does via App.setGuide.
+      window.addEventListener("message", (event) => {
+        if (event.origin !== "https://thesteward.co.za") return;
+        if (event.data?.type !== "steward:guide") return;
+        setGuide(event.data.heading, event.data.html);
+      });
+
       // ── APP ───────────────────────────────────────────────────────────────────────
       const isMobile = () => window.matchMedia("(max-width: 1000px)").matches;
 
@@ -776,11 +789,19 @@
                          // this the previous Steward calculator's wrapper is never found and never
                          // hidden, so opened calculators pile up visibly instead of swapping out.
             title: calc.title,
+            // The API now includes each calculator's guide copy (same intro/per-field
+            // heading+html CalcHero shows on The Steward itself — see The Steward's
+            // resources/calc-guides.js and functions/api/calculators.js). Carrying it
+            // through here is what makes _mountCalc's `if (mod.guide?.intro)` check
+            // (above) fire for a Steward calculator, same as it already does for the
+            // local tools/*.js modules — without this, opening one left the guide
+            // panel showing whatever it last had (e.g. stuck on "Opening the meeting").
+            guide: calc.guide,
             mount(wrapper) {
               wrapper.innerHTML = `
                 <div class="glass-panel calc-glass" style="padding:0;overflow:hidden;">
                   <iframe class="calc-embed-frame" title="${calc.title}"
-                    src="${calc.url}&embed=1"
+                    src="${calc.url}"
                     style="display:block;width:100%;height:100%;min-height:600px;border:none;"
                     loading="lazy"></iframe>
                 </div>`;
