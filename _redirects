@@ -1,0 +1,6 @@
+# /demo → the meeting dashboard's demo mode (see meeting-dashboard.html's IS_DEMO).
+# Target deliberately has no .html extension — Cloudflare Pages auto-redirects any
+# resolved .html/index.html target to its clean-URL form, which would otherwise
+# throw away the ?demo=1 query string here (see the-steward repo's _redirects for
+# the version of this bug that lost an entire path, not just a query string).
+/demo   /meeting-dashboard?demo=1   200

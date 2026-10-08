@@ -28,6 +28,29 @@ canonical source. Instead:
   that mechanism reads a calculator's DOM/`CalcState` directly, in-page, which
   can't reach into an iframe. Everything else about resuming a meeting (client
   record, every other panel's answers) is unaffected.
+- The API's `guide` field (each calculator's intro/per-field heading+html — see
+  The Steward's `resources/calc-guides.js`) drives this page's own guide panel
+  two ways: the intro text is set directly from `calc.guide.intro` when a
+  calculator is registered, and a click on a field label or chart bar *inside*
+  the iframe reaches this page via `postMessage` (The Steward's `index.html`
+  broadcasts every guide update it makes while embedded — see its
+  `_broadcastGuide` — and `meeting-dashboard.html` listens for
+  `{ type: "steward:guide" }` messages from `https://thesteward.co.za`).
+
+## Demo mode
+
+`financialtools.co.za/demo` (routed by `_redirects` to
+`meeting-dashboard.html?demo=1`) is the same file as the real, logged-in
+dashboard — not a separate page. `window.IS_DEMO` (set at the top of
+`meeting-dashboard.html`'s first script) branches every place demo mode
+differs: no Supabase auth or client load, no autosave (nothing persists —
+not even to `localStorage`, so a refresh starts clean), an editable advisor
+name/photo in the guide panel instead of the real profile (kept on
+`window.ACTIVE_ADVISER` in memory only), and a "Reset Demo" button instead of
+"Back to Client List". There used to be a separately maintained
+`meeting-demo.html` for this; it drifted from the real dashboard (missing
+calculator icons was the bug that prompted the merge) and is now just a
+redirect stub to `/demo`, kept so old links don't break.
 
 ## What actually needed to move here (audited, not assumed)
 
@@ -51,4 +74,7 @@ calculators, which don't live here anymore): Chart.js CDN,
 No build step. Serve the directory with any static server that can run
 alongside a real backend call to The Steward's API (plain `python3 -m http.server`
 or similar works, since nothing here needs Cloudflare Pages Functions —
-unlike `the-steward`/`adviser-pages`, this repo has none).
+unlike `the-steward`/`adviser-pages`, this repo has none). It does have a
+`_redirects` file (for the `/demo` clean URL) — that's a Cloudflare Pages
+redirect rule, not a Function, and a local static server won't apply it; hit
+`meeting-dashboard.html?demo=1` directly when developing demo mode locally.

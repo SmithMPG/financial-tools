@@ -1,4 +1,16 @@
 <!doctype html>
+<!-- ─────────────────────────────────────────────────────────────────────────────
+     This one file serves both the real, logged-in dashboard AND the public demo
+     (financialtools.co.za/demo → this file with ?demo=1, see _redirects) — there
+     used to be a second, separately maintained meeting-demo.html for the demo,
+     which quietly drifted from this file (missing calculator icons was the bug
+     that prompted the merge). Everywhere demo mode differs — no Supabase auth or
+     persistence, an editable advisor name/photo instead of the real profile, a
+     "Reset Demo" button instead of "Back to Client List" — branches on the single
+     window.IS_DEMO flag (set at the top of the first script block below), rather
+     than existing as a second copy of this page. Search this file for
+     IS_DEMO/demo-mode to see every place that applies.
+     ───────────────────────────────────────────────────────────────────────────── -->
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -151,6 +163,42 @@
         font-size: 0.9375rem;
         letter-spacing: 0.01em;
       }
+      /* ── Editable advisor profile (demo mode only — see body.demo-mode, set by
+           IS_DEMO). Inert in the real dashboard: the overlay stays opacity:0 and
+           pointer-events:none there, and #guide-id-name is never made
+           contenteditable, so none of this is reachable outside demo mode. ── */
+      .guide-avatar-wrap { position: relative; flex-shrink: 0; }
+      .guide-avatar-overlay {
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        background: rgba(0, 0, 0, 0.55);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.2s;
+        pointer-events: none;
+      }
+      body.demo-mode .guide-avatar-wrap { cursor: pointer; }
+      body.demo-mode .guide-avatar-wrap:hover .guide-avatar-overlay { opacity: 1; }
+      body.demo-mode .guide-id-name {
+        outline: none;
+        cursor: text;
+        border-bottom: 1px solid transparent;
+        transition: border-color 0.2s;
+        min-width: 40px;
+      }
+      body.demo-mode .guide-id-name:hover  { border-bottom-color: rgba(212, 168, 67, 0.4); }
+      body.demo-mode .guide-id-name:focus  { border-bottom-color: var(--gold, #d4a843); }
+      body.demo-mode .guide-id-name:empty::before {
+        content: attr(data-placeholder);
+        color: rgba(255, 255, 255, 0.25);
+        pointer-events: none;
+      }
+      /* ── Demo vs. real-dashboard-only bits (the guide drawer's bottom action) ── */
+      body.demo-mode .live-only { display: none !important; }
+      body:not(.demo-mode) .demo-only { display: none !important; }
     </style>
   </head>
 
@@ -303,10 +351,24 @@
       <div class="guide-shimmer" id="guide-shimmer" aria-hidden="true"></div>
       <div class="glass-content">
         <div class="guide-profile" id="guide-profile-header">
-          <img alt="" class="guide-avatar" id="guide-avatar" style="display: none" />
-          <span class="guide-avatar-initials" id="guide-avatar-initials">?</span>
+          <!-- Same markup serves both modes — see body.demo-mode CSS above and the
+               "Demo mode: editable advisor name + photo" script below. In the real
+               dashboard, #guide-avatar-wrap has no click listener of its own (so a
+               click here still bubbles up to #guide-profile-header → revertGuide,
+               same as before) and #guide-id-name is never made contenteditable. -->
+          <div class="guide-avatar-wrap" id="guide-avatar-wrap" title="Click to upload photo">
+            <img alt="" class="guide-avatar" id="guide-avatar" style="display: none" />
+            <span class="guide-avatar-initials" id="guide-avatar-initials">?</span>
+            <div class="guide-avatar-overlay" id="guide-avatar-overlay">
+              <svg width="18" height="18" fill="none" stroke="white" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                <circle cx="12" cy="13" r="4"/>
+              </svg>
+            </div>
+            <input type="file" id="guide-avatar-upload" accept="image/*" style="display: none" />
+          </div>
           <div>
-            <div class="guide-id-name" id="guide-id-name">Your Advisor</div>
+            <div class="guide-id-name" id="guide-id-name" spellcheck="false" data-placeholder="Your Name">Your Advisor</div>
             <div class="guide-id-role">Financial Advisor</div>
           </div>
         </div>
@@ -357,12 +419,20 @@
             Record of Advice
           </a>
 
-          <a class="tool-lnk" href="./">
+          <a class="tool-lnk live-only" href="./">
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
               <polyline points="15 18 9 12 15 6" />
             </svg>
             Back to Client List
           </a>
+
+          <button class="tool-lnk demo-only" id="demo-reset-btn">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+              <polyline points="1 4 1 10 7 10" />
+              <path d="M3.51 15a9 9 0 1 0 .49-4.5" />
+            </svg>
+            Reset Demo
+          </button>
         </div>
       </div>
     </aside>
@@ -370,6 +440,22 @@
     <!-- ─────────────────────────────────────────────────────────────── -->
     <!-- ─── APP SHELL JS ─────────────────────────────────────────────── -->
     <script>
+      // ── Demo mode (/demo → ?demo=1, see _redirects) ───────────────────────────
+      // Same file as the real, logged-in dashboard — see the top-of-file note on
+      // why this replaced a separately maintained meeting-demo.html. Everything
+      // downstream (the Supabase auth/client-load block, the autosave wiring, the
+      // editable-name/photo script near the end) branches on this one flag rather
+      // than existing in a second copy of the whole page.
+      window.IS_DEMO = new URLSearchParams(location.search).get("demo") === "1";
+      document.body.classList.toggle("demo-mode", window.IS_DEMO);
+      if (window.IS_DEMO) {
+        document.title = "Financial Tools – Meeting Tools Demo";
+        const robots = document.createElement("meta");
+        robots.name = "robots";
+        robots.content = "noindex, nofollow";
+        document.head.appendChild(robots);
+      }
+
       // ── One-time cleanup of legacy localStorage keys ──────────────────────────
       try {
         Object.keys(localStorage)
@@ -871,7 +957,7 @@
           applyAdviserAvatar(adviser);
           const nameEl = document.getElementById('guide-id-name');
           if (nameEl) nameEl.textContent = adviser.name;
-          document.title = 'The Steward – ' + adviser.name;
+          if (!window.IS_DEMO) document.title = 'The Steward – ' + adviser.name;
         }
 
         // Reset: clear in-memory state and start fresh
@@ -1007,7 +1093,10 @@
     }
 
     // ── Auth + client load (resolves before DOMContentLoaded mounts tools) ────
-    window._supabaseClientReady = (async () => {
+    // Demo mode never touches Supabase at all — no auth check, no login redirect,
+    // no client fetch. DOMContentLoaded below awaits this either way; resolving it
+    // immediately is what lets a demo visitor straight through to meeting-intro.
+    window._supabaseClientReady = window.IS_DEMO ? Promise.resolve() : (async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) { location.href = "./login.html"; return; }
 
@@ -1094,6 +1183,10 @@
     }
 
     async function syncToSupabase() {
+      // Belt-and-braces on top of the guards below: _activeClientId/_advisorSession
+      // are never set in demo mode anyway (the auth/client-load block above is
+      // skipped entirely), so this would already no-op — this just says so explicitly.
+      if (window.IS_DEMO) return;
       if (!window._restoreReady || !window._activeClientId || !window._advisorSession) return;
       const payload = _buildPayload();
       const cd = payload.tools?.["client-details"] || {};
@@ -1131,11 +1224,68 @@
 
     window._scheduleStewardSync = _markDirty;
 
-    document.addEventListener("meetingstate", _markDirty);
-    document.addEventListener("input", _markDirty);
-    document.addEventListener("change", _markDirty);
-    window.addEventListener("beforeunload", () => { if (window._restoreReady && _isDirty) syncToSupabase(); });
-    setInterval(_syncIfDirty, 300000);
+    // No autosave machinery at all in demo mode — nothing to gate, nothing to debounce,
+    // nothing ticking in the background for a session that's never going to persist.
+    if (!window.IS_DEMO) {
+      document.addEventListener("meetingstate", _markDirty);
+      document.addEventListener("input", _markDirty);
+      document.addEventListener("change", _markDirty);
+      window.addEventListener("beforeunload", () => { if (window._restoreReady && _isDirty) syncToSupabase(); });
+      setInterval(_syncIfDirty, 300000);
+    }
+  </script>
+
+  <script>
+    // ── Demo mode: reset button + editable advisor name/photo ────────────────────
+    // Session-only by design (per "none of the data saves") — everything here lives
+    // on window.ACTIVE_ADVISER in memory, never localStorage, so a reload (Reset
+    // Demo, or just refreshing the tab) clears it along with every other in-memory
+    // tool state, exactly like the rest of a demo session.
+    if (window.IS_DEMO) {
+      document.getElementById("demo-reset-btn")?.addEventListener("click", () => {
+        sessionStorage.setItem("fa_reset", "1");
+        location.reload();
+      });
+
+      (function () {
+        const wrap   = document.getElementById("guide-avatar-wrap");
+        const img    = document.getElementById("guide-avatar");
+        const upload = document.getElementById("guide-avatar-upload");
+        const nameEl = document.getElementById("guide-id-name");
+        if (!wrap || !nameEl) return;
+
+        // Start from the placeholder-driven empty state (see body.demo-mode's
+        // :empty::before rule) rather than the real dashboard's "Your Advisor"
+        // fallback text.
+        nameEl.textContent = "";
+        nameEl.contentEditable = "true";
+
+        // stopPropagation on both: #guide-profile-header's own click handler calls
+        // App.revertGuide(), which we don't want firing while editing the profile.
+        wrap.addEventListener("click", (e) => { e.stopPropagation(); upload.click(); });
+        nameEl.addEventListener("click", (e) => e.stopPropagation());
+
+        upload.addEventListener("change", () => {
+          const file = upload.files[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            window.ACTIVE_ADVISER = { ...window.ACTIVE_ADVISER, img: ev.target.result };
+            applyAdviserAvatar(window.ACTIVE_ADVISER);
+          };
+          reader.readAsDataURL(file);
+        });
+
+        nameEl.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === "Escape") { e.preventDefault(); nameEl.blur(); }
+        });
+        nameEl.addEventListener("input", () => {
+          const name = nameEl.textContent.trim();
+          window.ACTIVE_ADVISER = { ...window.ACTIVE_ADVISER, name };
+          applyAdviserAvatar(window.ACTIVE_ADVISER); // keep the "?" initials fallback in sync while typing
+        });
+      })();
+    }
   </script>
 
   </body>
