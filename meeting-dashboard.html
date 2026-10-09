@@ -1111,7 +1111,7 @@
       // after another. This is the difference between one round trip and two.
       const [{ data: advisorProfile }, { data: client }] = await Promise.all([
         supabase.from("advisors").select("name, logo_url, email").eq("id", session.user.id).maybeSingle(),
-        supabase.from("clients").select("session_json, first_name, last_name, email, phone").eq("id", clientId).single(),
+        supabase.from("clients").select("session_json, first_name, last_name").eq("id", clientId).single(),
       ]);
 
       // Load logged-in advisor's profile and override the slug-based ACTIVE_ADVISER
@@ -1159,8 +1159,6 @@
             extra: {
               first_name: client.first_name || "",
               last_name:  client.last_name  || "",
-              email:      client.email      || "",
-              phone:      client.phone      || "",
             }
           };
         }
@@ -1195,8 +1193,6 @@
       const updates = { session_json: payload };
       if (src.first_name !== undefined) updates.first_name = src.first_name || null;
       if (src.last_name  !== undefined) updates.last_name  = src.last_name  || null;
-      if (src.email      !== undefined) updates.email      = src.email      || null;
-      if (src.phone      !== undefined) updates.phone      = src.phone      || null;
       await supabase
         .from("clients")
         .update(updates)
