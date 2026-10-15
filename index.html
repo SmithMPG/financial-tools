@@ -1101,6 +1101,10 @@
       // before its own declaration line has run throws a TDZ ReferenceError, even
       // from inside a function, if that function runs before the declaration does.
       let allClients = [];
+      // Same reason: renderClients() → sortClients() reads these, and the client
+      // fetch can resolve before the advisor-profile await below finishes.
+      let sortKey = "name"; // "name" | "meeting" | "added"
+      let sortDir = "asc"; // "asc" | "desc"
 
       // Wrapped in an async IIFE so the auth guard below can `return` to bail out
       // early on no session — a bare top-level `return` in a module is a SyntaxError
@@ -1307,9 +1311,6 @@
           </button>
         </div>`;
       }
-
-      let sortKey = "name"; // "name" | "meeting" | "added"
-      let sortDir = "asc"; // "asc" | "desc"
 
       window.setSort = function (key) {
         sortDir = sortKey === key ? (sortDir === "asc" ? "desc" : "asc") : "asc";
