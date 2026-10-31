@@ -446,7 +446,12 @@
       // downstream (the Supabase auth/client-load block, the autosave wiring, the
       // editable-name/photo script near the end) branches on this one flag rather
       // than existing in a second copy of the whole page.
-      window.IS_DEMO = new URLSearchParams(location.search).get("demo") === "1";
+      // The /demo rule in _redirects is a 200 rewrite, so the browser's URL stays
+      // "/demo" and the ?demo=1 it rewrites to never reaches location.search —
+      // check the path too, or /demo silently falls through to the login redirect.
+      window.IS_DEMO =
+        new URLSearchParams(location.search).get("demo") === "1" ||
+        /^\/demo\/?$/.test(location.pathname);
       document.body.classList.toggle("demo-mode", window.IS_DEMO);
       if (window.IS_DEMO) {
         document.title = "Financial Tools – Meeting Tools Demo";
@@ -770,8 +775,6 @@
         panel.classList.add("open");
         backdrop.style.opacity = "1";
         backdrop.style.pointerEvents = "auto";
-        document.getElementById("hint-left").style.display = "none";
-        document.getElementById("hint-right").style.display = "none";
       }
 
       function closeAll() {
@@ -968,8 +971,14 @@
           return;
         }
 
-        // Always start at meeting-intro — Supabase provides the data, no need to remember last tool
-        window.App._mountCalc("meeting-intro");
+        // Always start at meeting-intro — Supabase provides the data, no need to remember last tool.
+        // Guarded so a UI error here can't abort the handler before the preload below —
+        // that's exactly how a missing #hint-left element left every saved tool blank.
+        try {
+          window.App._mountCalc("meeting-intro");
+        } catch (err) {
+          console.error("[init] meeting-intro failed to mount:", err);
+        }
 
         // Preload all tools that have pending state from Supabase so they're ready instantly.
         // Each tool is isolated — if one throws while mounting/restoring, it's logged and
@@ -1109,10 +1118,18 @@
       // Advisor profile and client record don't depend on each other — only both
       // depend on the session above — so fetch them concurrently instead of one
       // after another. This is the difference between one round trip and two.
-      const [{ data: advisorProfile }, { data: client }] = await Promise.all([
+      const [{ data: advisorProfile }, { data: client, error: clientError }] = await Promise.all([
         supabase.from("advisors").select("name, logo_url, email").eq("id", session.user.id).maybeSingle(),
         supabase.from("clients").select("session_json, first_name, last_name").eq("id", clientId).single(),
       ]);
+
+      // If the client record didn't load, the tools will mount blank — and autosaving
+      // those blanks would overwrite the real meeting. Block every save for this page.
+      if (clientError || !client) {
+        console.error("[steward] client load failed — saving disabled for this page:", clientError);
+        window._clientLoadFailed = true;
+        alert("Couldn't load this client's meeting. Saving is turned off so nothing gets overwritten — please reload the page.");
+      }
 
       // Load logged-in advisor's profile and override the slug-based ACTIVE_ADVISER
       if (advisorProfile) {
@@ -1131,6 +1148,9 @@
         window.AppSession?.clearClientData();
 
         console.log("[steward] raw client:", JSON.stringify(client));
+
+        // Baseline for the wipe guard in syncToSupabase()
+        window._loadedDataScore = _dataScore(client?.session_json?.tools);
 
         if (client?.session_json && Object.keys(client.session_json).length > 0) {
           const payload = client.session_json;
@@ -1180,32 +1200,73 @@
       return { version: 2, exportedAt: new Date().toISOString(), tools, meetingState };
     }
 
+    // Rough "how much has been filled in" count: non-empty strings, non-zero numbers, true.
+    function _dataScore(node) {
+      if (node == null) return 0;
+      if (typeof node === "string") return node.trim() ? 1 : 0;
+      if (typeof node === "number") return node !== 0 ? 1 : 0;
+      if (typeof node === "boolean") return node ? 1 : 0;
+      if (Array.isArray(node)) return node.reduce((n, v) => n + _dataScore(v), 0);
+      if (typeof node === "object") return Object.values(node).reduce((n, v) => n + _dataScore(v), 0);
+      return 0;
+    }
+
     async function syncToSupabase() {
       // Belt-and-braces on top of the guards below: _activeClientId/_advisorSession
       // are never set in demo mode anyway (the auth/client-load block above is
       // skipped entirely), so this would already no-op — this just says so explicitly.
       if (window.IS_DEMO) return;
+      if (window._clientLoadFailed) return;
       if (!window._restoreReady || !window._activeClientId || !window._advisorSession) return;
       const payload = _buildPayload();
+
+      // Wipe guard: never silently replace a meeting with one holding far less data.
+      // Normal edits barely move this score; a blank/failed restore halves it or worse.
+      const before = window._loadedDataScore || 0;
+      const after = _dataScore(payload.tools);
+      if (before >= 10 && after < before * 0.5) {
+        if (window._wipeConfirmed !== after) {
+          const ok = confirm(
+            "Saving now would remove most of this client's saved meeting data " +
+            `(${after} filled fields vs ${before} when the page loaded).\n\n` +
+            "Press Cancel unless you deliberately cleared it. Cancel keeps the saved data safe."
+          );
+          if (!ok) { window._clientLoadFailed = true; return; } // stop saving for this page
+          window._wipeConfirmed = after;
+        }
+      }
       const cd = payload.tools?.["client-details"] || {};
       // Tool state is { inputs: {...}, extra: {...} }; extra comes from getState(), inputs from DOM
       const src = cd.extra || cd.inputs || cd;
       const updates = { session_json: payload };
       if (src.first_name !== undefined) updates.first_name = src.first_name || null;
       if (src.last_name  !== undefined) updates.last_name  = src.last_name  || null;
-      await supabase
+      const { error } = await supabase
         .from("clients")
         .update(updates)
         .eq("id", window._activeClientId);
+      // Throw rather than swallow: a failed save used to look identical to a
+      // successful one, so the meeting was silently never persisted.
+      if (error) {
+        console.error("[steward] save failed:", error);
+        throw error;
+      }
     }
 
     let _syncTimer;
     let _isDirty = false;
+    let _saveFailWarned = false;
 
     async function _syncIfDirty() {
       if (!window._restoreReady || !_isDirty) return;
-      await syncToSupabase();
-      _isDirty = false;
+      try {
+        await syncToSupabase();
+        _isDirty = false; // only clear once the save actually landed
+      } catch {
+        if (_saveFailWarned) return; // retries keep going; just don't re-alert every 3s
+        _saveFailWarned = true;
+        alert("Couldn't save this meeting to the server. Please don't close this tab — check your connection and try again.");
+      }
     }
 
     function _markDirty() {
